@@ -1,4 +1,4 @@
-<p align="center">Vehicle Booking</p>
+<p align="center"><h1>Vehicle Booking</h1></p>
 
 <p align="center">
 <a href="#"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
