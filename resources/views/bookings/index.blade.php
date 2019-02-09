@@ -119,8 +119,8 @@
   <tbody>
     @foreach($bookingsData as $rowData)
     <tr>
-      <th scope="row">{{$rowData->id}}</th>
-      <td>{{$rowData->booking_id}}</td>
+      <th scope="row">{{$rowData->booking_id}}</th>
+    
       <td>{{$rowData->start_time}}</td>
       <td>{{$rowData->end_time}}</td>
       <td>{{$rowData->list_of_persons}}</td>

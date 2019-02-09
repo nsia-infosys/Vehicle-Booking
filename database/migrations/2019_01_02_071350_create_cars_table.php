@@ -21,7 +21,7 @@ class CreateCarsTable extends Migration
            $table->string('type',25);
            $table->boolean('status')->default(1);
             $table->timestamps();
- 
+          });
     }
 
     /**

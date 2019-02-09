@@ -8,7 +8,7 @@ class car extends Model
 {
 	protected $primaryKey = 'car_id';
 	 protected $fillable = [
-        'plate_no', 'color', 'type','model','status'
+        'plate_no', 'color', 'type','model','status','driver_id'
     ];
 
     

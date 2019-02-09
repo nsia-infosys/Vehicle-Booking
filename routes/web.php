@@ -22,7 +22,17 @@ Route::get('/home', 'HomeController@index')->name('home');
 Auth::routes();
 
 Route::resource('/users', 'userController');
+
+
+Route::post('/cars/searchCar/{data}','carController@searchCar')->name('cars.searchCar');
 Route::resource('/cars', 'carController');
+
+
 Route::post('/drivers/searchDriver/{data}','driverController@searchDriver')->name('drivers.searchDriver');
 Route::resource('/drivers', 'driverController');
+
+
 Route::resource('/bookings', 'bookingController');
+
+Route::post('/car booking','book_a_car@sendData')->name('car_book.sendData');
+Route::get('/bookD','book_a_car@driversData');

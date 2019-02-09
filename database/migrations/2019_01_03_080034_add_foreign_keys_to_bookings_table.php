@@ -39,6 +39,8 @@ class AddForeignKeysToBookingsTable extends Migration
     {
         Schema::table('bookings', function (Blueprint $table) {
             //
+
+        
         });
     }
 }
