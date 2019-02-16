@@ -31,8 +31,8 @@ Route::resource('/cars', 'carController');
 Route::post('/drivers/searchDriver/{data}','driverController@searchDriver')->name('drivers.searchDriver');
 Route::resource('/drivers', 'driverController');
 
-
+Route::post('/bookings/reject','bookingController@reject');
 Route::resource('/bookings', 'bookingController');
 
-Route::post('/car booking','book_a_car@sendData')->name('car_book.sendData');
-Route::get('/bookD','book_a_car@driversData');
+Route::post('/book vehical','bookVehicalController@sendData')->name('book_vehical.sendData');
+Route::get('/book a vehical','bookVehicalController@index')->name('book_vehical.sendData');

@@ -84,9 +84,9 @@
                         <li>   
                               <a class="nav-link" href="/">{{ __('home') }}</a>
                         </li>
-                        <!-- <li>   
-                              <a class="nav-link" href="/car booking">{{ __('car booking') }}</a>
-                        </li> -->
+                         <li>   
+                              <a class="nav-link" href="/book a vehical">{{ __('pending books') }}</a>
+                        </li> 
                         <li>   
                               <a class="nav-link" href="/cars">{{ __('cars') }}</a>
                         </li>
@@ -163,7 +163,7 @@
                           <div class=" text-white bg-secondary card">
                             <div class="card-header">Car booking</div>
                               <div class="card-body">
-                                <form action='' id='carBookingForm'>
+                                <form action='' id='bookACar'>
                                 @csrf
                                   <div class="row">
                                     <div class="col-md-6">
@@ -182,17 +182,15 @@
                                     </div>
                                     <div class="col-md-6">
                                       <div class="form-group">
-                                        <label for="list_of_persons">{{ __('List of Persons') }}</label>
-                                        <input type="text" class="form-control" id="list_of_persons" name="list_of_persons" placeholder=" please type name of persons ">
+                                        <label for="count">{{ __('count of persons') }}</label>
+                                        <input type="text" class="form-control" id="count" name="count" placeholder=" please type name of persons ">
                                       </div>
                                       <div class="form-group">
-                                        <label for="driver_id">{{ __('Open drivers') }}</label>
-                                        <input type="text" class="form-control" id="open_drivers" name="open_drivers" placeholder=" list of open drivers ">
-                                      </div>
-                                      <div class="form-group">
-                                        <label for="list_of_persons">{{ __('Open cars') }}</label>
-                                        <input type="text" class="form-control" id="open_cars" name="open_cars" placeholder=" list of open cars ">
-                                      </div>
+                                        <label for="description">{{ __('Descripion') }}</label>
+                                        <textarea type="text" class="form-control" id="description" name="description" placeholder=" more description ">
+                                        </textarea>
+                                        </div>
+                                    
                                       <div class="form-group clear-fix">
                                         <button type='submit' class='btn float-right btn-primary' name="reserve" id='reserve'>{{('Reserve')}}</button>
                                         <span class="float-right">&nbsp</span>

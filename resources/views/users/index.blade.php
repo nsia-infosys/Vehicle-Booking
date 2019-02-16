@@ -102,8 +102,8 @@
 </div>
 
 <!-- update modal box -->
-	<table class="table">
-  <thead class="thead-dark">
+	<table class="table table-light table-bordered ">
+  <thead>
     <tr>
       <th scope="col">ID</th>
       <th scope="col">Name</th>
@@ -121,8 +121,8 @@
       <td>{{$rowData->position}}</td>
       <td>{{$rowData->directorate}}</td>
       <td>{{$rowData->email}}</td>
-  		<td><a href="/users/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-primary updateBtn">Update</a></td>
-	  	<td><a href="/users/{{ $rowData->id}} " id="{{ $rowData->id}}" class='deleteBtn btn btn-danger'>Delete </button></td>
+  		<td class='text-center'><a href="/users/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-primary updateBtn">Update</a></td>
+	  	<td class="text-center"><a href="/users/{{ $rowData->id}} " id="{{ $rowData->id}}" class='deleteBtn btn btn-danger'>Delete </button></td>
     </tr>
     @endforeach
   </tbody>

@@ -167,8 +167,8 @@
 <!-- update modal box data -->
 <div id='driverTable'>
   
-	<table id='dataTable' class="table table-responsive centered" >
-  <thead class="thead-dark">
+	<table id='dataTable' class="table table-bordered table-light" >
+  <thead>
     <tr>
       <th scope="col">{{ __('Driver ID') }}</th>
       <th scope="col">{{__('Name')}}</th>

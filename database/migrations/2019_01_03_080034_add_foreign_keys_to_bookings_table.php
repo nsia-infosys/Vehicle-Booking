@@ -14,13 +14,13 @@ class AddForeignKeysToBookingsTable extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->integer('driver_id')->unsigned();
+            $table->integer('driver_id')->unsigned()->nullable();
             $table->foreign('driver_id')->references('driver_id')->on('drivers')->onDelete('no action');
 
         });
 
         Schema::table('bookings',function (Blueprint $table){
-            $table->integer('car_id')->unsigned();
+            $table->integer('car_id')->unsigned()->nullable();
             $table->foreign('car_id')->references('car_id')->on('cars')->onDelete('no action');
         });
 

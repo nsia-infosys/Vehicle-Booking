@@ -18,13 +18,38 @@ $("#insertButton, .updateBtn").click(function(){
 });
 //load update data and validation of insert and update form
 var loc = window.location.href;
-$("#carBookingForm").submit(function(e){
+
+ApprovalBooking();
+function ApprovalBooking(){
+  $(".pending_table").submit(function(e){
+    e.preventDefault();
+    
+  var dataForm = ($(this).serialize());
+  var element =$(this);
+  $.ajax({
+    method: "post",
+    url: "/bookings/",
+    data: dataForm,
+    success:function(data){
+      if(data.indexOf('Approved')>=0){
+      element.fadeOut(1000);
+     $("#errDiv").fadeOut();$("#sucDiv").html(data);  $("#sucDiv").fadeIn();
+    }
+    else{
+     $("#sucDiv").fadeOut(); $("#errDiv").html(data); $("#errDiv").fadeIn();
+     } 
+    
+    }
+  });
+  });
+}
+$("#bookACar").submit(function(e){
   e.preventDefault();
  var data= $(this).serialize();
- 
+
  $.ajax({
   method: 'POST',
-  url: "/car booking",
+  url: "/book vehical",
   data: data,
   success: function(data){
     $("#carBooking").modal('hide');
@@ -33,7 +58,8 @@ $("#carBookingForm").submit(function(e){
     $("#sucDiv").fadeOut(2000);
   }  
  });
-console.log(data);
+
+ console.log(data);
 
 });
 if(loc.indexOf('driver')>=0){
@@ -333,15 +359,15 @@ function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp1
     $("#updateModal").modal('show');
   });
 }
-validateCarBooking();
-function validateCarBooking(){
-  var validator = $("#carBookingForm").validate({
+validateVehicalBook();
+function validateVehicalBook(){
+  var validator = $("#bookACar").validate({
     rules:{
       destination: {required:true},
       pickup_time: {required:true,regex:/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]/},
       return_time:{required:true,regex:/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]/},
-      open_drivers:{required:true},
-      open_cars:{required:true}
+      description:{required:true},
+      
     },
     messages:{
       pickup_time:{

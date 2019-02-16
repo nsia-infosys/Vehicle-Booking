@@ -171,8 +171,8 @@
 </div>
 
 <!-- update modal box -->
-	<table class="table" id='dataTable'>
-  <thead class="thead-dark">
+	<table class="table table-bordered table-light" id='dataTable'>
+  <thead >
       <tr>
       <th scope="col">{{__('Car ID')}}</th>
       <th scope="col">{{__('Plate Number')}}</th>
