@@ -24,7 +24,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-</head>
+  </head>
 <body>
     
     <div id="app">
@@ -82,23 +82,47 @@
                     
                     <ul class="navbar-nav mr-auto">
                         <li>   
-                              <a class="nav-link" href="/">{{ __('home') }}</a>
-                        </li>
-                         <li>   
-                              <a class="nav-link" href="/book a vehical">{{ __('pending books') }}</a>
-                        </li> 
-                        <li>   
-                              <a class="nav-link" href="/cars">{{ __('cars') }}</a>
+                           
+                              <a class="nav-link" href="/home">{{ __('home') }}</a>
                         </li>
                         <li>   
-                              <a class="nav-link" href="/drivers">{{ __('drivers') }}</a>
-                        </li>
-                        <li>   
-                              <a class="nav-link" href="/bookings">{{ __('bookings') }}</a>
-                        </li>  
-                              <a class="nav-link" href="/users">{{ __('users') }}</a>
-                        </li>
-                        
+                            <a class="nav-link" href="/cars">{{ __('Cars') }}</a>
+                      </li>
+                      <li>   
+                            <a class="nav-link" href="/drivers">{{ __('Drivers') }}</a>
+                      </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              {{ __('Bookings') }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/bookings">{{ __('Bookings') }}</a>
+                              <a class="dropdown-item" href="/pending_bookings">{{ __('Pendings') }}</a>
+                            </div>
+                          </li>
+                       
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              {{ __('Users') }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                              <a class="dropdown-item" href="/users">{{ __('Users') }}</a>
+                              <a class="dropdown-item" href="/pendings_users">{{ __('Pendings') }}</a>
+                            </div>
+                          </li>
+                          <li class="nav-item dropdown">
+                              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ __('Access controller') }}
+                              </a>
+                              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                
+                                  <a class="dropdown-item" href="/user_roles">{{ __('Users Role') }}</a>
+                                  <a class="dropdown-item" href="/user_permissions">{{ __('Users permission') }}</a>
+                                <a class="dropdown-item" href="/roles">{{ __('Roles') }}</a>
+                                <a class="dropdown-item" href="/permissions">{{ __('Permissions') }}</a>
+                              </div>
+                            </li>
+                       
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -113,16 +137,19 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
+                               @if(Auth::check())
                                 <li>
                                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#carBooking">book a car</button>
                                 </li>
+                                @endif
+                                
                             @endif
 
                         @else
 
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                    {{ Auth::user()->name  }} <span class="caret"></span>
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -149,11 +176,12 @@
         <main class="py-4" style="margin-top: 5% !important">
                     
         </main>
+
         <div class="container">
                 <div id='sucDiv' class="alert alert-success" style="display: none"></div>
                 <div id='errDiv' class="alert alert-danger" style="display: none"></div>
 
-
+                @if(Auth::check())
                 <div id='carBooking' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered " style="min-width: 50%">
                     <div class="modal-content bg-primary">
@@ -168,6 +196,9 @@
                                   <div class="row">
                                     <div class="col-md-6">
                                       <div class="form-group">
+                                        
+                                        <input type="hidden" value={{ Auth::user()->id }} name='user_id'>
+                                    
                                         <label for="destination">{{ __('Destination') }} </label>
                                         <input type="text" class="form-control" name='destination' id="destination" placeholder="insert your destination">
                                       </div>
@@ -206,6 +237,7 @@
                       </div>
                     </div>
                   </div>
+                  @endif
 
             @yield('content')
 

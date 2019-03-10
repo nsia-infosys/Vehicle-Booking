@@ -66,18 +66,13 @@
                       <div class="help-block " id='phErr'> </div>
                 </div>
               </div>
-              <label  style="position: static">{{ __('Existence of driver') }}</label>
-              <div>
-                  <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-light active">
-                      <input type="radio" name="status" id="present" autocomplete="off" checked value='true'> {{ __('True') }}
-                    </label>
-                    <label class="btn btn-light">
-                      <input type="radio" name="status" id="absent" autocomplete="off" value='false'>{{ __('False') }} 
-                    </label>
-                  </div>
+              <div class="form-group">
+                <label  for="car">{{ __('driver status') }}</label>
+                <select class='form-control form-control-sm' name='status' id="status">
+                     <option value=true>present</option>
+                     <option value=false>absent</option>
+                  </select>
               </div>
-              
               <div class="form-group clear-fix">
                 <button type='submit' class='btn float-right btn-primary' name="saveInsert" id='saveInsert'>Save</button>
                 <span class="float-right">&nbsp</span>
@@ -132,16 +127,12 @@
                             <div class="help-block" id='UphErr'> </div>
                         </div>
                       </div>
-                      <label  style="position: static">{{ __('Existence of driver') }}</label>
-                      <div>
-                          <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                            <label class="btn btn-light " id='updatePresent'>
-                              <input type="radio" name="driver_status" id="present" autocomplete="off" checked value='true'> {{ __('True') }}
-                            </label>
-                            <label class="btn btn-light" id='updateAbsent'>
-                              <input type="radio" name="driver_status" id="absent" autocomplete="off" value='false'>{{ __('False') }} 
-                            </label>
-                          </div>
+                      <div class="form-group">
+                        <label  for="car">{{ __('driver status') }}</label>
+                        <select class='form-control form-control-sm' name='driver_status'>
+                             <option value=true>present</option>
+                             <option value=false>absent</option>
+                          </select>
                       </div>
               
                       <div class="form-group clear-fix">
@@ -189,18 +180,21 @@
       <td>{{$rowData->phone_no}}</td>
       <td>
         @if($rowData->status == "true")
-          {{$rowData->status = 'True'}}
-        @else {{$rowData->status = 'False'}}
+          {{$rowData->status = 'true'}}
+        @else {{$rowData->status = 'false'}}
       @endif
       </td>
       <td>{{$rowData->created_at}}</td>
       <td>{{$rowData->updated_at}}</td>
-  		<td><a href="/drivers/{{$rowData->driver_id}}" id="{{$rowData->driver_id}}" class="btn btn-primary updateBtn" >Update</a></td>		
+  		<td><a href="/drivers/{{ $rowData->driver_id }}" id="{{$rowData->driver_id}}" class="btn btn-primary updateBtn" >Update</a></td>		
 	  	<td><a href="/drivers/{{$rowData->driver_id}}" id="{{$rowData->driver_id}}" class='deleteBtn btn btn-danger'>Delete </button></td>
     </tr>
     @endforeach
   </tbody>
 </table>
+
+{{ $driversData->links() }}
+
 
 </div>
 
@@ -209,3 +203,4 @@
 //end of jqery                            
  </script>
 @endsection()
+

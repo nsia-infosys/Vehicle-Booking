@@ -18,14 +18,14 @@ $("#insertButton, .updateBtn").click(function(){
 });
 //load update data and validation of insert and update form
 var loc = window.location.href;
-
-ApprovalBooking();
-function ApprovalBooking(){
+var locPath = window.location.pathname;
+insertBooking();
+function insertBooking(){
   $(".pending_table").submit(function(e){
     e.preventDefault();
     
   var dataForm = ($(this).serialize());
-  var element =$(this);
+ 
   $.ajax({
     method: "post",
     url: "/bookings/",
@@ -49,16 +49,18 @@ $("#bookACar").submit(function(e){
 
  $.ajax({
   method: 'POST',
-  url: "/book vehical",
+  url: "/bookings",
   data: data,
   success: function(data){
-    $("#carBooking").modal('hide');
-    $("#sucDiv").html(data);
-    $("#sucDiv").fadeIn();
-    $("#sucDiv").fadeOut(2000);
+    console.log(data);
+    // $("#carBooking").modal('hide');
+    // $("#sucDiv").html(data);
+    // $("#sucDiv").fadeIn();
+    // $("#sucDiv").fadeOut(2000);
   }  
  });
-
+ 
+ 
  console.log(data);
 
 });
@@ -97,7 +99,7 @@ if(loc.indexOf('driver')>=0){
 //for car page
 else if(loc.indexOf('car')>=0){
 
-  loadUpdatingData('/cars/','car_id','plate_no','color','model','type','status','driver_id');
+  loadUpdatingData('/cars/','plate_no_for_update','plate_no','color','model','type','driver_id');
   validateCarUpdate();
   validateCarInsert();
   deleteData("/cars/");
@@ -108,7 +110,7 @@ else if(loc.indexOf('car')>=0){
     if(validateCarInsert().valid()){
       $(".help-block").text('');
       if(!($(".error").text())){
-          insertData('/cars/','plate_no','color','model','type','status');
+          insertData('/cars/','plate_no','color','model','type','status','driver_id');
         }
       }
   });
@@ -118,7 +120,7 @@ else if(loc.indexOf('car')>=0){
   if(validateCarUpdate().valid()){
       if(!($(".error").text())){
         $(".help-block").text('');
-        updateData('/cars/','plate_no','car_color','car_model','car_type','car_status','driver_id');
+        updateData('/cars/','plate_no','car_color','car_model','car_type','driver_id','car_status');
       }
     }
   });
@@ -129,6 +131,116 @@ else if(loc.indexOf('car')>=0){
     else{searchData('POST','/cars/searchCar/');}
   });
 }
+else if(locPath == '/users'){  
+  validateUserInsert();
+  loadUpdatingData('/users/','id','position','directorate','status');
+  validateUserUpdate();
+  deleteData("/users/");
+
+  //new data insertion
+  $("#insertForm").submit(function(e){
+    e.preventDefault();
+    if(validateUserInsert().valid()){
+      $(".help-block").text('');
+      if(!($(".error").text())){
+          insertData('/users/','position','directorate','status');
+        }
+      }
+  });
+  // updating data
+  $("#updateForm").submit(function(e){
+    e.preventDefault();
+  if(validateUserUpdate().valid()){
+      if(!($(".error").text())){
+        $(".help-block").text('');
+        updateData('/users/','status');
+      }
+    }
+  });
+  
+  // search part
+  $("#searchInp").keyup(function(e){
+    e.preventDefault();
+    if($('#searchon option:selected').text()=="Search By"){$("#searchon").focus(); }
+    else{searchData('POST','/users/searchUser/');}
+  });
+  
+}
+else if(locPath == '/home'){  
+  $(".passBtn").click(function(e){
+    e.preventDefault();
+    $("#passModal").modal('show');
+  });
+  validateUserInsert();
+  loadUpdatingData('/users/','id','position','directorate','status');
+  validateUserUpdate();
+  deleteData("/users/");
+
+  //new data insertion
+  $("#insertForm").submit(function(e){
+    e.preventDefault();
+    if(validateUserInsert().valid()){
+      $(".help-block").text('');
+      if(!($(".error").text())){
+          insertData('/users/','position','directorate','status');
+        }
+      }
+  });
+  // updating data
+  $("#updateForm").submit(function(e){
+    e.preventDefault();
+  if(validateUserUpdate().valid()){
+      if(!($(".error").text())){
+        $(".help-block").text('');
+        updateData('/users/','status');
+      }
+    }
+  });
+  
+  // search part
+  $("#searchInp").keyup(function(e){
+    e.preventDefault();
+    if($('#searchon option:selected').text()=="Search By"){$("#searchon").focus(); }
+    else{searchData('POST','/users/searchUser/');}
+  });
+  
+}
+else if(locPath == "/pendings_users"){
+  loadUpdatingData('/users/','id');
+
+  $("#updateForm").submit(function(e){
+    e.preventDefault();
+    alert('submit');
+    updateData('/approveUser/','id','status');
+  });
+}
+else if(locPath == "/user_roles"){
+ 
+      loadUpdatingData('/roles/','id','name','role_name');
+      $("form#updateForm").submit(function(e){
+        e.preventDefault();
+        updateData('/roles/','id','role_id');
+      });
+}
+else if(locPath == "/user_permissions"){
+ 
+      loadUpdatingData('/permissions/','id','name','permission_name');
+      $("form#updateForm").submit(function(e){
+        e.preventDefault();
+        updateData('/permissions/','id','permission_name');
+      });
+}
+else if(locPath =='/pending_bookings'){
+  $('.updateBtn').click(function(e){
+    e.preventDefault();
+    $('#updateModal').show();
+  });
+ }
+else if(loc.indexOf('booking')>=0){
+ loadBookingUpdatingData();
+}
+
+
 
 $("#searchForm").submit(function (e){
   e.preventDefault();
@@ -139,9 +251,9 @@ $("#searchForm").submit(function (e){
 function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,inpName7,inpName8,inpName9,inpName10){
   var dataForUpdate = $("#updateForm").serialize();
   var id = $("#updateForm input:eq(1)").val();
-  alert(id);
-  if([inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,inpName7,inpName8,inpName9,inpName10].indexOf('status')>=0){         }
-        
+  
+  console.log(dataForUpdate);
+  alert('helloFrom update');
  $.ajax({
     method: "PUT",
     url: url + id,
@@ -149,7 +261,7 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
     success: function(data){
       console.log(data);
 
-      if(data == "successfully updated"){
+      if(data.indexOf("successfully")>=0 || data.indexOf('pending')>=0||data.indexOf("role/roles remvoed")>=0){
         $("#sucDiv").html(data);
         $("#updateModal").modal('hide');
         $("#sucDiv").fadeIn(100);
@@ -177,13 +289,14 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
               $("#updateForm .help-block:eq(0)").html("* "+data[0]);}
             }
           if(!(typeof data[1]=="undefined")){
-            if(data[1].indexOf('is assigned for driver')>=0){
+            if(data[1].indexOf('there is no driver exist with this id')>=0){
               $('#updateForm .help-block:eq(5)').html('* ' +data[1]);
             }
           }
 
           if(!(typeof data[2]=="undefined")){
             if(data[2].indexOf('no driver registered')>=0){
+              alert(data[2]);
               $('#updateForm .help-block:eq(5)').html("* "+data[2]);
             }
           }
@@ -272,8 +385,12 @@ function searchData(method,url){
       loadUpdatingData('/drivers/','driver_id','name','father_name','phone_no','status');
       deleteData("/drivers/");}
       else if(loc.indexOf('car')>=0){
-      loadUpdatingData('/cars/','car_id','plate_no','color','model','type','status','driver_id');
-      deleteData("/cars/");}
+      loadUpdatingData('/cars/','plate_no_for_update','plate_no','color','model','type','driver_id');
+      deleteData("/cars/"); }
+      else if(loc.indexOf('user')>=0){
+        loadUpdatingData('/users/','id','position');
+        deleteData('/users/');
+      }
 
       }
     }
@@ -302,7 +419,7 @@ function insertData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
              loadUpdatingData('/drivers/','driver_id','name','father_name','phone_no','status')
               deleteData("/drivers/");}
               if(url.indexOf('car')>=0){
-                loadUpdatingData('/cars/','car_id','plate_no','color','model','type','status','driver_id');
+                loadUpdatingData('/cars/','plate_no_for_update','plate_no','color','model','type','driver_id');
                 deleteData('/cars/');
               }
             }
@@ -313,19 +430,64 @@ function insertData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
       console.log(data);
      if(!(typeof data[inpName1]=="undefined")){$("#insertForm .help-block:eq(0)").html('* '+data[inpName1]);}
         if(!(typeof data[inpName2]=="undefined")){ $("#insertForm .help-block:eq(1)").html('* '+data[inpName2]);}
-        if(!(typeof data[inpName3]=="undefined")){ $("#insertForm .help-block:eq(2)").html('* '+data[inpName3]);}}} });
+        if(!(typeof data[inpName3]=="undefined")){ $("#insertForm .help-block:eq(2)").html('* '+data[inpName3]);}
+        
+     if(!(typeof data[inpName4]=="undefined")){$("#insertForm .help-block:eq(3)").html('* '+data[inpName4]);}
+     
+     if(!(typeof data[inpName5]=="undefined")){$("#insertForm .help-block:eq(4)").html('* '+data[inpName5]);}
+     if(!(typeof data[inpName6]=="undefined")){$("#insertForm .help-block:eq(5)").html('* '+data[inpName6]);}
+     
+     alert(data[inpName8]);
+     if(!(typeof data[inpName8]=="undefined")){$("#insertForm .help-block:eq(6)").html('* '+data[inpName8]);}
+      
+      
+      }} });
 }
-
 function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp10){  
   $(".updateBtn").click(function(e){
     e.preventDefault();
-    var user_id = $(this).attr('id');
+    $("input[type='checkbox']").prop('checked',false);
+    var id = $(this).attr('id');
+    
     $.ajax({
       method : "GET",
-      url : urlN+user_id + "/edit" ,
-      data: user_id,
+      url : urlN+id + "/edit" ,
+      data: id,
       success: function(data) {
         console.log(data);
+        if(loc.indexOf("user_roles")>=0){  
+          
+          for(i=0;i<data.length;i++){ 
+           console.log(data[i][inp3]);
+            $("input[value='"+data[i][inp3]+"'").prop("checked", true); 
+         }
+          console.log(data[0][inp1]);
+        console.log(data[0][inp2]);
+        console.log(data[0][inp3]);
+        
+
+      $("#updateForm input:eq(1)").val(data[0][inp1]);
+      $("#id").text(data[0][inp1]);
+      $("#name").text(data[0][inp2]);
+     
+      }
+      else if(loc.indexOf('user_permissions')>=0){
+        
+        for(i=0;i<data.length;i++){ 
+          console.log(data[i][inp3]);
+           $("input[value='"+data[i][inp3]+"'").prop("checked", true); 
+        }
+         console.log(data[0][inp1]);
+       console.log(data[0][inp2]);
+       console.log(data[0][inp3]);
+       
+
+     $("#updateForm input:eq(1)").val(data[0][inp1]);
+     $("#id").text(data[0][inp1]);
+     $("#name").text(data[0][inp2]);
+      }
+      
+      else{        
         $("#updateForm input:eq(1)").val(data[inp1]);
         $("#updateForm input:eq(2)").val(data[inp2]);
         $("#updateForm input:eq(3)").val(data[inp3]);
@@ -336,23 +498,7 @@ function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp1
         $("#updateForm input:eq(8)").val(data[inp8]);
         $("#updateForm input:eq(9)").val(data[inp9]);
         $("#updateForm input:eq(10)").val(data[inp10]);
-        if([inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp10].indexOf('status')>=0){
-
-          if(data['status']===false){
-            
-            $("#updateAbsent").addClass('active');
-            $("#updatePresent").removeClass('active');
-            $("#present").removeAttr('checked');
-            $("#absent").attr('checked', 'checked');
-          
-          }else{
-            
-            $("#updateAbsent").removeClass('active');
-            $("#updatePresent").addClass('active');
-            $("#present").attr('checked','checked');
-            $("#absent").removeAttr('checked');
-          }
-        }
+      }
         
       }
     });
@@ -383,7 +529,7 @@ function validateVehicalBook(){
 function validateCarUpdate(){
     var validator = $("#updateForm").validate({ 
       rules: {
-        plate_no: {required:true,regex:/^[0-9]+$/,minlength:3,maxlength:6},
+        plate_no: {required:true,required:true,regex:/^[0-9]+$/, range:[100,999999]},
         car_color: {required:true,minlength:3},
         car_status: {required:true},
         car_type: {required:true},
@@ -401,7 +547,7 @@ function validateCarUpdate(){
 function validateCarInsert(){
     var validator = $("#insertForm").validate({ 
       rules: {
-        plate_no :{required:true,regex:/^[0-9]+$/,minlength:3,maxlength:6},
+        plate_no :{required:true,regex:/^[0-9]+$/, range:[100,999999]},
         color: {required:true,minlength:3},
         status :{required:true},
         type :{required:true},
@@ -453,6 +599,159 @@ function validateDriverUpdate(){
   });
   return validatorUpdate;
 }
+function validateUserInsert(){
+  var validator = $("#insertForm").validate({ 
+    rules: {
+      phone :{required:true,regex: /^07[0-9]{8}$/},
+      email: {required:true,email:true},
+      password :{required:true,regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/},
+      position :{required:true},
+      directorate :{required:true},
+      name :{required:true},
+      password_confirmation :{required:true,equalTo:"#password"},
+      
+    }, 
+    messages:{
+      plate_no:{
+        regex: "please insert a valid number plate for example 44928"
+      },
+      password:{
+        regex: "Minimum eight characters, at least one letter, one number and one special character",
+      },
+    } 
+  });
+  return validator;
+}
+function validateUserUpdate(){
+  var validator = $("#updateForm").validate({ 
+    rules: {
+      phone :{required:true,regex: /^07[0-9]{8}$/},
+      email: {required:true,email:true},
+      password :{required:true,regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/},
+      position :{required:true},
+      directorate :{required:true},
+      name :{required:true},
+      password_confirmation :{required:true,equalTo:"#password"},
+      
+    }, 
+    messages:{
+      plate_no:{
+        regex: "please insert a valid number plate for example 44928"
+      },
+      password:{
+        regex: "Minimum eight characters, at least one letter, one number and one special character",
+      },
+    } 
+  });
+  return validator;
+}   
+$("input[name='reject']").click(function(){
+    
+  var id = $(this).closest('form').children("input[name='booking_id']").val();
+  var approval = $(this).closest('form').children("div").children('div').children("select[name='approval']");
+  var pickup_time = $(this).closest('form').children('div').find("input[name='approval_pickup_time']");
+  var return_time = $(this).closest('form').children('div').find("input[name='approval_return_time']");
+  var approver_description = $(this).closest('form').children('div').find("textarea[name='approver_description']");
+  var plate_no = $(this).closest('form').children('div').find("select[name='plate_no']");
+  var driver_id = $(this).closest('form').children('div').find("select[name='driver_id']");
+  approval.val('false');
+  pickup_time.val('');
+  return_time.val('');
+  plate_no.val('null');
+  driver_id.val('null');
+   var txt_msg = approver_description.val();
 
+  if (txt_msg.replace(/^\s+|\s+$/g, "").length == 0 || txt_msg==""||txt_msg.replace(/^\s+|\s+$/g, "").length <=9) {  
+      approver_description.siblings('div').html("<p class='text-danger'>at least 10 characters for case of rejection is required</p>");
+      approver_description.css('border','1px solid red');
+      approver_description.focus();
+    return false;
+      }
+      else{
+        approver_description.siblings('div').html('');
+        approver_description.css('border','1px solid #ced4da');
+        var formData = $(this).closest('form').serialize();
+        
+       var divHide = $(this).closest('form').parent('div').parent('div');
+       
+      
+    $.ajax({
+      method: "PUT",
+      url: "/bookings/"+id,
+      data: formData,
+      success: function(data){
+        if(data.indexOf('rejected')>=0){
+        divHide.fadeOut(1500);
+        $('#sucDiv').html(data);
+        $('#sucDiv').fadeIn();
+        $('#sucDiv').fadeOut(3000);}
+        console.log(data);
+      }  });  
+  }
+   });
+      
+$(".pending_book_form").submit(function(e){
+  e.preventDefault();
+  var id = $(this).children("input[name='booking_id']").val();
+  console.log("this is you want: "+id);
+  var formData = $(this).serialize();
+ var divFadeOut = $(this).parent('div').parent('div');
+ alert(id);
+  console.log(formData);
+  $.ajax({
+    method: "PUT",
+    url: "/bookings/"+id,
+    data: formData,
+    success: function(data){
+      divFadeOut.fadeOut(1500);
+      $("#sucDiv").html(data);
+      $("#sucDiv").fadeIn();
+      $("#sucDiv").fadeOut(3000);
+      console.log(data);
+    }
+  });
+});
+
+function loadBookingUpdatingData(){  
+  $(".updateBtn").click(function(e){
+  $("#plate_no").val();
+    e.preventDefault();
+    var id = $(this).attr('id');
+    alert(id);
+    $.ajax({
+      method : "GET",
+      url : "/bookings/"+id + "/edit" ,
+      data: id,
+      success: function(data) {
+        console.log(data);
+      
+      $('#plate_no').find('option').remove().end().append("<option value='"+data['bookings']['plate_no']+"'>"+data['bookings']['plate_no']+"</option>");
+      $("#approval").find('option').remove().end().append("<option value='"+data['bookings']['approval']+"'>"+data['bookings']['approval']+"</option>")
+      $("#driver_id").find('option').remove().end().append("<option value='"+data['bookings']['driver_id']+"'>"+data['bookings']['driver_id']+"</option>")
+      if(data['bookings']['approval']==null){
+        $("#approval").append("<option value='true'>true</option>");
+        $("#approval").append("<option value='false'>false</option>");
+      }
+      if(data['bookings']['approval']==true){
+        
+        $("#approval").append("<option value='false'>false</option>");
+      }
+      if(data['bookings']['approval']==false){
+        $("#approval").append("<option value='true'>true</option>");
+        
+      }
+
+      
+      // $("#plate_no").val(data['plate_no']);
+        // $("#plate_no").append("<option selected value='"+data['plate_no']+"'>"+data['plate_no']+"</option>");
+        $("#approval_pickup_time").val(data['bookings']['approval_pickup_time']);
+        $("#approval_return_time").val(data['bookings']['approval_return_time']);
+        $("#approver_description").val(data['bookings']['approver_description']);
+        
+      }
+    });
+    $("#updateModal").modal('show');
+  });
+}
       });
 //end of jqery

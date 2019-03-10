@@ -1,5 +1,8 @@
 @extends("layouts.app")
 @section('content')
+@php
+
+@endphp
 
 <!--  -->
     <div class="row">
@@ -14,7 +17,6 @@
                     <input type="text" id="searchInp" name="searchInp" class="form-control form-inline" placeholder="Search...">&nbsp
                     <select id="searchon" name="searchon" class="form-control" method='post'>
                         <option>{{__('Search By')}}</option>
-                        <option value="car_id">{{ __('Car ID')}}</option>
                         <option value="plate_no">{{ __('Plate Number')}}</option>
                         <option value="color">{{__('Car Color')}}</option>
                         <option value="type">{{__('Car Type')}}</option>
@@ -24,10 +26,7 @@
                     </select>&nbsp
                     <button id='searchBtn' type="submit" class="btn btn-info form-control">Search</button><div class='clear-fix'></div>
                     {{ csrf_field() }}
-                  
-                </form>      
-  
-  
+                </form>   
           </div>      
     </div>
 
@@ -75,19 +74,25 @@
                       </div>
                       <div class="form-group">
                         <label for="status">{{ __('Status') }}</label>
-                        <input type="text" class="form-control"  placeholder="status of car" name="status">
-                        <div class='errorsOfDriver font-italic text-light' >
-                          <div class="help-block " id='status_error'> </div>
-                        </div>
+                        <select class="form-control"  placeholder="status of car" name="status">
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+                        </select>
+                        <div class="help-block " id='status_error'> </div>
                       </div>
+                      
                       <div class="form-group">
-                        <label for="driver_id">{{ __('Driver ID') }}</label>
-                        <input type="text" class="form-control"  placeholder="driver id" name="driver_id" id='driver_id'>
-                        <div class='errorsOfDriver font-italic text-light' >
-                          <div class="help-block " id='driver_id_error'> </div>
-                        </div>
+                          <label for="driver">{{ __('Driver') }}</label>
+                          <select class="form-control"  name="driver_id">
+                            
+                            <option value="">null</option>
+                            @foreach ($drivers as $driver)
+                            <option value="{{ $driver->driver_id }}"> {{ $driver->driver_id . " _ " . $driver->name  }}</option>
+                            @endforeach
+                          </select>
+                          <div class="help-block " id='type_error'> </div>
                       </div>
-                     
+                      
                       <div class="form-group clear-fix">
                         <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
                         <span class="float-right">&nbsp</span>
@@ -121,7 +126,7 @@
                     <div class="card-body">
                     <form id='updateForm'>
                       @csrf
-                      <input type="hidden" name="" id='car_id'>
+                      <input type="hidden" name="plate_no_for_update" id='plate_no_for_update'>
                       <div class="form-group">
                         <label for="name">{{ __('Plate number') }} </label>
                         <input type="text" class="form-control" id="plate_no" name="plate_no" placeholder="insert plate number">
@@ -143,16 +148,24 @@
                         <div class="help-block "> </div>
                       </div>
                       <div class="form-group">
-                        <label for="formGroupExampleInput2">{{ __('Status') }}</label>
-                        <input type="text" class="form-control" id="car_status" name="car_status" placeholder="status of car">
-                        <div class="help-block "> </div>
-                      </div>
-                      <div class="form-group">
-                        <label for="formGroupExampleInput2">{{ __('Driver ID') }}</label>
-                        <input type="text" class="form-control" id="driver_id" placeholder="status of car" name='driver_id'>
-                        <div class="help-block "> </div>
-                      </div>
-                     
+                          <label for="status">{{ __('Status') }}</label>
+                          <select class="form-control"  name="car_status" id='car_status'>
+                            <option value="true">true</option>
+                            <option value="false">false</option>
+                          </select>
+                          <div class="help-block " id='status_error'> </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="driver">{{ __('Driver') }}</label>
+                            <select class="form-control"  name="driver_id">
+                              <option value="">null</option>
+                              @foreach ($drivers as $driver)
+                              <option value="{{ $driver->driver_id }}"> {{ $driver->driver_id . " _ " . $driver->name  }}</option>
+                              @endforeach
+                            </select>
+                            <div class="help-block " id='driver_error'> </div>
+                          </div>
                       <div class="form-group clear-fix">
                         <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
                         <span class="float-right">&nbsp</span>
@@ -171,10 +184,11 @@
 </div>
 
 <!-- update modal box -->
+
 	<table class="table table-bordered table-light" id='dataTable'>
   <thead >
       <tr>
-      <th scope="col">{{__('Car ID')}}</th>
+      
       <th scope="col">{{__('Plate Number')}}</th>
       <th scope="col">{{__('Color')}}</th>
       <th scope="col">{{__('Model')}}</th>
@@ -189,9 +203,8 @@
   <tbody class="tableOfDriver">
     @foreach($carsData as $rowData)
     <tr>
-      <td scope="row" style="font-weight: bold">{{$rowData->car_id}}</td>
+      <td scope="row" style="font-weight: bold">{{$rowData->plate_no}}</td>
       
-      <td>{{$rowData->plate_no}}</td>
       <td>{{$rowData->color}}</td>
       <td>{{$rowData->model}}</td>
       <td>{{$rowData->type}}</td>
@@ -209,8 +222,8 @@
       </td>
       <td>{{$rowData->created_at}}</td>
       <td>{{$rowData->updated_at}}</td>
- 		<td><a href="/cars/{{$rowData->car_id}}" id="{{ $rowData->car_id}}" class="btn btn-primary updateBtn">Update</a></td>		
-	  	<td><a href="/cars/{{$rowData->car_id}}" id="{{ $rowData->car_id}}" class='deleteBtn btn btn-danger'>Delete </a></td>
+ 		<td><a href="/cars/{{$rowData->plate_no}}" id="{{ $rowData->plate_no}}" class="btn btn-primary updateBtn">Update</a></td>		
+	  	<td><a href="/cars/{{$rowData->plate_no}}" id="{{ $rowData->plate_no}}" class='deleteBtn btn btn-danger'>Delete </a></td>
     </tr>
     @endforeach
   </tbody>
