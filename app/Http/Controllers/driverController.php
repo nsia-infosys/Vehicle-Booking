@@ -22,7 +22,7 @@ class driverController extends Controller
 // protected $redirectTo = '/drivers';
     public function index()
     {
-        $driversData = DB::table('drivers')->orderBy('driver_id','des')->get();
+        $driversData = DB::table('drivers')->orderBy('driver_id','des')->paginate(5);
         $dataCounts =  DB::table('drivers')->count();
         return view('/drivers/index')->with(compact('driversData','dataCounts'));
     }
@@ -32,29 +32,29 @@ class driverController extends Controller
       $searchInput= $request->input('searchInp');
 
         if($searchOn == "id"){
-        $dataArray = DB::table('drivers')->where("driver_id",'LIKE',"%$searchInput%")->get();
+        $dataArray = DB::table('drivers')->where("driver_id",'LIKE',"%$searchInput%")->paginate(5);
         $dataCount = DB::table('drivers')->where("driver_id",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "name"){
-        $dataArray = DB::table('drivers')->where("name",'LIKE',"%$searchInput%")->get();
+        $dataArray = DB::table('drivers')->where("name",'LIKE',"%$searchInput%")->paginate(5);
         $dataCount = DB::table('drivers')->where("name",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "father_name"){
-        $dataArray = DB::table('drivers')->where("father_name",'LIKE',"%$searchInput%")->get();
+        $dataArray = DB::table('drivers')->where("father_name",'LIKE',"%$searchInput%")->paginate(5);
         $dataCount = DB::table('drivers')->where("father_name",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "phone_no"){
-        $dataArray = DB::table('drivers')->where("phone_no",'LIKE',"%$searchInput%")->get();
+        $dataArray = DB::table('drivers')->where("phone_no",'LIKE',"%$searchInput%")->paginate(5);
         $dataCount = DB::table('drivers')->where("phone_no",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "status"){
             if($searchInput == 'a'){$searchInput = str_replace('a', false, false);}
-        $dataArray = DB::table('drivers')->where("status",'LIKE',"%$searchInput%")->get();
+        $dataArray = DB::table('drivers')->where("status",'LIKE',"%$searchInput%")->paginate(5);
         $dataCount = DB::table('drivers')->where("status",'LIKE',"%$searchInput%")->count();}
         if($dataCount >0 ){
             
         foreach ($dataArray as $data) {
-            if($data->status === false){$data->status = 'False';}else{$data->status='True';}
+            if($data->status === false){$data->status = 'false';}else{$data->status='true';}
             echo "<tr><td><b>". $data->driver_id . "</b></td>" .
                  "<td>" . $data->name . "</td>".
                  "<td>" . $data->father_name . "</td>".
@@ -124,7 +124,7 @@ class driverController extends Controller
     public function show($id)
     {
       $data = DB::table('drivers')->where('driver_id',$id)->first();
-      if($data->status == 1){$data->status = "True";}else{$data->status="False";}
+      if($data->status == 1){$data->status = 'true';}else{$data->status='false';}
     
     $row = "<tr><td><b>".$data->driver_id."</b></td><td>" . $data->name ."</td><td>" . $data->father_name ."</td><td>"
                 .$data->phone_no."</td><td>".$data->status."</td><td>".$data->created_at."</td><td>".$data->updated_at."</td><td><a href='/drivers/"
@@ -161,8 +161,9 @@ class driverController extends Controller
         $father_name = $request->input('driver_father_name');
         $phone_no = $request->input('driver_phone_no');
         $status = $request->input('driver_status');
-        if($name == $data['name'] && $father_name ==$data['father_name'] && $phone_no ==
-         $data['phone_no']&& $status ==$data['status'])
+     
+        if($name == $data['name'] && $father_name ==$data['father_name'] &&
+         $phone_no == $data['phone_no'] && $status ===$data['status'])
         {
             $responseErr = "There is nothing for update, please enter new things into field/fields";
             return $responseErr;

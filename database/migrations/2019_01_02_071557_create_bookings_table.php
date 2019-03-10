@@ -16,11 +16,16 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->increments('booking_id');
             $table->dateTime('pickup_time');
-             $table->dateTime('return_time');
-             $table->tinyInteger('count');
-             $table->longText('description');
-             $table->string('destination');
-             $table->boolean('approval');
+            $table->dateTime('return_time');
+            $table->tinyInteger('count');
+            $table->longText('description');
+            $table->string('destination');
+            $table->dateTime('book_created_time');
+            $table->dateTime('book_updated_time');
+            $table->boolean('approval')->nullable();
+            $table->longText('approver_description')->nullable();
+            $table->dateTime('approval_pickup_time')->nullable();
+            $table->dateTime('approval_return_time')->nullable();
             $table->timestamps();
         });
     }

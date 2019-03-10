@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\booking;
 use DB;
+use Response;
 use illuminate\Http\QueryException;
+use Validator;
 class bookingController extends Controller
 {
     
@@ -16,18 +19,29 @@ class bookingController extends Controller
      */
     public function index()
     {
-       $rows  = DB::table('bookVehicals')->get();
-       $countOfRows = DB::table('bookVehicals')->count();
-        // return view('bookings/index')->with('rows',$rows);
-        
-        $bookingsData = Booking::all();
-        return view('/bookings/index')->with(['bookingsData'=>$bookingsData,'rows'=>$rows,'countOfRows'=>$countOfRows]);
+        $approvedCount = DB::table('bookings')->where('approval',true)->count();
+        $rejectedCount = DB::table('bookings')->where('approval',false)->wherenotnull('approver_description')->count();
+        $pendingsCount = DB::table('bookings')->wherenull('approval')->wherenull('approver_description')->count();
+        $bookingsData = Booking::orderByDesc('pickup_time')->paginate(4);
+        return view('/bookings/index')->with(['bookingsData'=>$bookingsData,'approvedCount'=>$approvedCount
+        ,'rejectedCount'=>$rejectedCount,'pendingsCount'=>$pendingsCount]);
 
+    }
+    public function pendings(){
+        $freeCars = DB::table('cars')->get();
+
+        $freeDrivers = DB::table('drivers')->get();
+
+        $countPendings = DB::table('bookings')->where("approval",null)->count();
+        $pendings = DB::table('bookings')->where('approval',null)->paginate(5);
+       
+        return view('/bookings/pendings')->with(['pendings'=>$pendings,"countPendings"=>$countPendings,
+        'freeDrivers'=>$freeDrivers,'freeCars'=>$freeCars]);
     }
     public function reject(Request $request){
         $insertQuery = DB::table('bookings')->insert(['pickup_time'=>$request->input('pickup_time'),
         'return_time'=>$request->input('return_time'),'count'=>$request->input('count'),
-            'description'=>$request->input('description'),'destination'=>$request->input('destination'),'approval'=>false,'driver_id'=>null,'car_id'=>null,
+            'description'=>$request->input('description'),'destination'=>$request->input('destination'),'approval'=>false,'driver_id'=>null,'plate_no'=>null,
             'user_id'=>$request->input('user_id')]);
         
     }
@@ -49,48 +63,44 @@ class bookingController extends Controller
      */
     public function store(Request $request)
     {
-        $bookRows = DB::table('bookVehicals')->get();
-
-        $pickupt_time = $request->input('pickup_time');
+        $user_id =$request->input('user_id');
+       
+        $pickup_time = $request->input('pickup_time');
         $return_time = $request->input('return_time');
         $count = $request->input('count');
         $description = $request->input('description');
-        $destination = $request->input('destination');
-        $approval = $request->input('approval');
-        $driver_id = $request->input('driver_id');
-        $car_id = $request->input('car_id');
-        $user_id = $request->input('user_id');
-        
-        // return $pickupt_time . " " .$return_time . " " .$count . " " .$description . " " .$destination . " " .$driver_id . " " .
-        // $car_id . " " .$user_id;
-
-        try{
-
-    //  $insertQuery = Booking::create($request->all());  
-    if($request->input('approval')=='false' OR $request->input('approval') === false){
-            $insertQuery = DB::table('bookings')->insert(['pickup_time'=>$pickupt_time,'return_time'=>$return_time,'count'=>$count,
-            'description'=>$description,'destination'=>$destination,'approval'=>$approval,'driver_id'=>null,'car_id'=>null,
-            'user_id'=>$user_id]);
-            return "Please select true for approval field";
-            }
-            else{
-                if(!($car_id)||!($driver_id)  || $car_id ==null ||$driver_id ==null){return "driver ID and car ID is required";}
-                $insertQuery = DB::table('bookings')->insert(['pickup_time'=>$pickupt_time,'return_time'=>$return_time,'count'=>$count,
-            'description'=>$description,'destination'=>$destination,'approval'=>$approval,'driver_id'=>$driver_id,'car_id'=>$car_id,
-            'user_id'=>$user_id]);
-            $del = DB::table('bookVehicals')->where('pickup_time',$pickupt_time)->where('return_time',$return_time)->where('count',$count)->
-            where('destination',$destination)->where('description',$description)->delete();
-
-            return "Approved!" . " driver ID ".$driver_id . " and Car ID: " .$car_id;    
+        $destination = $request->input('destination');   
+        $created_at = now(); $updated_at = now();
+        $rules = array('pickup_time'=>'date|required',
+        'return_time'=>'after:pickup_time|date|required',
+        'count:numeric|min:1',
+        'description:string|min:10',
+        'destination:string|min:5');
+        $validator = Validator::make($request->all(),$rules);
+        if($validator->fails()){
+            return $validator->errors()->toArray();
         }
-            
+        else{
+         try{
+             
+                DB::statement(DB::raw("INSERT INTO bookings (booking_id,pickup_time,return_time,count,description,destination
+                ,user_id,created_at,updated_at)
+                 values (
+                     DEFAULT,'$pickup_time','$return_time',$count,'$description','$destination',$user_id,now(),now()
+                     )
+                     "));
+                    
+                return "YOU HAVE SUCSSESSFULLY BOOKED VEHICAL";
+        }catch(QueryException $e){
+            return $e->getMessage();
+        }
     }
-    catch(QueryException $ex){
-        print_r($ex->getMessage());
+
     }
+    
        
         
-    }
+    
 
     /**
      * Display the specified resource.
@@ -111,7 +121,22 @@ class bookingController extends Controller
      */
     public function edit($id)
     {
-        //
+        $bookings = Booking::find($id);
+        $freeCars = DB::select(DB::raw("SELECT distinct bookings.plate_no,cars.type,cars.plate_no,cars.driver_id FROM 
+        cars LEFT JOIN bookings ON bookings.plate_no = cars.plate_no WHERE bookings.plate_no IS NULL and cars.status=true 
+        OR approval_return_time < now()"));
+
+        $freeDrivers = DB::select(DB::raw("SELECT distinct bookings.driver_id,drivers.phone_no,drivers.driver_id,
+        drivers.name FROM drivers LEFT JOIN bookings ON bookings.driver_id = drivers.driver_id WHERE 
+        bookings.driver_id IS NULL and drivers.status = TRUE OR approval_return_time < now()"));
+
+        $countPendings = DB::table('bookings')->where("approval",null)->count();
+        $pendings = DB::table('bookings')->where('approval',null)->get();
+       
+        
+        if (\Illuminate\Support\Facades\Request::ajax()) {
+            
+           return Response::json(array('bookings'=>$bookings,'freeDrivers'=>$freeDrivers,'freeCars'=>$freeCars));}   
     }
 
     /**
@@ -124,6 +149,76 @@ class bookingController extends Controller
     public function update(Request $request, $id)
     {
         //
+        
+        $user_id =$request->input('user_id');
+       
+        $booking_id = $id;
+        $approval = $request->input('approval');
+       $approval_pickup_time =  $request->input('approval_pickup_time');
+       $approval_return_time =  $request->input('approval_return_time');
+       $driver_id =  $request->input('driver_id');
+       $plate_no =  $request->input('plate_no');
+       $approver_description =  $request->input('approver_description');
+        
+
+       if($approval===false||$approval==false||$approval=="false"){
+        try{
+            DB::statement(DB::raw("update bookings set approval = $approval, approver_description =
+             '$approver_description',approver_user_id=$user_id,updated_at=now() where booking_id = $id"));
+             return "you have rejected";
+
+        }   catch(QueryException $e){
+            return $e->getMessage();
+        }
+       
+       }else{
+       
+        if($approval == true || $approval =="true"|| $approval ===true){
+            $rules = array(
+                'approval_pickup_time' => 'required|date',
+                'approval_return_time' => 'required|date|after:approval_pickup_time',
+                'driver_id' => 'required',
+                'plate_no' => 'required',
+            );
+            $validator = Validator::make($request->all(),$rules);
+            if($validator->fails()){
+                return $validator->errors()->toArray();
+            }
+            else{
+        }
+
+       try{
+       DB::statement(DB::raw("update bookings set plate_no=$plate_no, approval =$approval,approval_pickup_time='$approval_pickup_time'
+       ,approval_return_time='$approval_return_time',driver_id=$driver_id,approver_description = '$approver_description',approver_user_id=$user_id,
+       updated_at=now() where 
+       booking_id=$id"));
+        return "successfully approved";
+    }
+       catch(QueryException $e){
+           return $ex->getMessage();
+       }
+    }
+    }
+    //    if($approval){
+    //        return "Null Value";
+    //    }
+        // if(empty($request->input('approval')) || $request->input('approval')==null || $request->input('approval')==""
+        // || $request->input('approval')=="null"){
+        //     $approval_pickup_time = null;  $approval_return_time = null; $driver_id = null; $car_id =null;$approver_description =null;
+        // $rules = array("approval_pickup_time"=>"required|date_format:Y-m-d H:i:s",
+        // "approval_return_time"=>"date_format:Y-m-d H:i:s");
+        // return $request->all();
+        // die();
+        // }
+        // return $approval;
+        // $validator = Validator::make($request->all(), $rules);
+        // if($validator->fails()){
+        //     return $validator->errors()->toArray();
+        // }
+        // else{
+        //     return "There is no Error";
+        // }
+        
     }
 
     /**
@@ -135,5 +230,31 @@ class bookingController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function freeCar(Request $request){
+        $pickup_time = $request->input('pickup_time');
+        
+        $pick_time_plate= DB::select(DB::raw("SELECT plate_no FROM bookings where
+        approval_return_time < '$pickup_time'"));
+        $x=0;
+           foreach ($pick_time_plate as  $value) {
+             $freeCar[$x] = $value->plate_no;
+             $x++;
+           }
+           return $pick_time_plate;
+
+    }
+    public function freeDriver(Request $request){
+        $pickup_time = $request->input('pickup_time');
+     
+
+        $pick_time_driver= DB::select(DB::raw("SELECT driver_id FROM bookings where
+        approval_return_time < '$pickup_time'"));
+        $x=0;
+           foreach ($pick_time_driver as  $value) {
+             $freeDriver[$x] = $value->driver_id;
+             $x++;
+           }
+           return $pick_time_driver;
     }
 }

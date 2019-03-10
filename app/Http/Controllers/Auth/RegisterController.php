@@ -48,14 +48,18 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $passRegexMessage = [
+            'password.regex'=>' Password must has 8 letters, at least one letter, one number and one special charecter ',
+            'phone.regex'=>'phone number must start with 07 and not be greater than 10 numbers'];
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', 'min:6', 'confirmed','regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/'],
             'position' =>['required','string','min:4'],
             'directorate'=>['required','string','min:4'],
-            'phone' =>['required','regex:/^07[0-9]{8}/'], //
-        ]);
+            'phone' =>['required','regex:/^07[0-9]{8}/'], 
+            
+        ],$passRegexMessage);
     }
 
     /**
