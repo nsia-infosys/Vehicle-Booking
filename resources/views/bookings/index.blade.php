@@ -9,10 +9,10 @@
       <div class="row">
         <div class="col-md-12">
           <div class="card text-white bg-secondary ">
-          <div class="card-header">insert new data</div>
+          <div class="card-header">{{ __('Update') }}</div>
             <div class="card-body">
                 
-              <form action='' id='insertForm'>
+              <form action='' id='updateForm'>
                   @csrf
                   <input type="hidden" name='booking_id' value="">
                   <div class="row" style="padding-left:15px;padding-right:15px">
@@ -27,11 +27,11 @@
                         <label  for="car"><b>{{ __('car') }} </b></label>&nbsp;
                         <select class='form-control form-control-sm plate_no' name='plate_no' id="plate_no">
                             <option value="">SELECT A CAR</option>
-                            {{-- @foreach ($freeCars as $item)
+                            @foreach ($freeCars as $item)
                              <option value="{{ $item->plate_no }}">
                                {{ $item->plate_no . " _ " . $item->type ." _ " .$item->driver_id }}
                               </option>
-                            @endforeach --}}
+                            @endforeach
   
                           </select>
                       </div>
@@ -40,9 +40,9 @@
                         <select class='form-control form-control-sm driver_id' name='driver_id' id="driver_id">
                             <option value="">SELECT A DRIVER</option>
                             
-                            {{-- @foreach ($freeDrivers as $item)
+                            @foreach ($freeDrivers as $item)
                              <option value="{{ $item->driver_id }}">{{ $item->driver_id . "_" . $item->name ."_". $item->phone_no }}</option>
-                            @endforeach --}}
+                            @endforeach
                           </select>
                         </div>
                       <div class="form-group col-md-12 col-sm-12 col-lg-6">
@@ -59,9 +59,11 @@
                         <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder=" are you agree or not agree, why?"></textarea>
                         <div class="help-error"></div>
                       </div>
-                      
-                      <div class="col-md-6 col-sm-6 col-8 col-lg-4"><input type="submit" value="APPROVE" class="btn btn-block btn-primary"></div>
-                      <div class="col-md-6 col-sm-6 col-8 col-lg-4" > <input type="button" value="REJECT" name='reject' class="btn btn-block btn-danger"></div>
+                      <div class="col-md-12">
+                 <input type="submit" value="APPROVE" class="btn float-right btn-primary">
+                 <span class="float-right">&nbsp;</span>
+                   <input type="button" value="REJECT" name='reject' class="btn float-right btn-danger">
+                      </div>
                       
                     </div>
                 </form>
@@ -131,7 +133,7 @@
           <td>{{  $rowData->updated_at}}</td>  
                
           <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-          <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+          
         </tr>  
         @endif
         @endforeach

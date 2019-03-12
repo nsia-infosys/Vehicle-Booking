@@ -5,9 +5,9 @@
 <!--  -->
     <div class="row">
           <div class="col-md-8 form-inline">
-            <button id="insertButton" type="button" class="btn btn-primary btn-inline" style="margin-bottom: 3px;">Register new user</button>
+            <button id="insertButton" type="button" class="btn btn-primary btn-inline" style="margin-bottom: 3px;">{{ __('Registernewuser') }}</button>
             <div class="clear-fix"></div>
-                    &nbsp&nbsp&nbsp    <h4>{{__('Total Users: ') . $countOfUsers}}</h4>
+                    &nbsp&nbsp&nbsp    <h4>{{__('Total Approved Users: ') . $countOfUsers}}</h4>
                     &nbsp&nbsp&nbsp&nbsp&nbsp
                 <form id='searchForm' class="form-inline" style="margin-bottom: 3px;">
                   @csrf
@@ -86,7 +86,6 @@
                                 <div class="form-group col-md-6">
                                     <label for="status" >{{ __('Status') }}</label>
                                     <select id="status" class="form-control" name="status">
-                                      <option value=''>pending</option>
                                       <option value="true">True</option>
                                       <option value="false">False</option>
                                     </select>
@@ -109,6 +108,7 @@
                                   </div>
                               </div>
                           </div>
+                          {{--  <input type="hidden" name='approver_user_id' value="{{ Auth::user()->id }}">  --}}
                           <div class="row">
                               <div class="form-group clear-fix col-md-12">
                                   <button type='submit' class='btn form-group col-sm-2 col-xs-2 float-right  btn-primary' name="saveInsert" id='saveInsert'>{{ __('Register') }}</button>
@@ -185,6 +185,9 @@
       <th scope="col">{{ __('Email') }}</th>
       <th scope="col">{{ __('phone') }}</th>
       <th scope="col">{{ __('status') }}</th>
+      <th scope="col">{{ __('Approver ID') }}</th>
+      <th scope="col">{{ __('created_at') }}</th>
+      <th scope="col">{{ __('updated_at') }}</th>
       <th scope="col" colspan="2" class='text-center'>{{ __('Action') }}</th>
     </tr>
   </thead>
@@ -208,8 +211,11 @@
         <span style="color:white;background-color:firebrick;border-radius:3px;padding:4px">  {{  _('Rejected')}}</span>
         @endif
       </td>
+      <td>{{ $rowData->approver_user_id }}</td>
+      <td>{{ $rowData->created_at }}</td>
+      <td>{{ $rowData->updated_at }}</td>
   		<td class='text-center'><a href="/users/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-primary updateBtn">Update</a></td>
-	  	<td class="text-center"><a href="/users/{{ $rowData->id}} " id="{{ $rowData->id}}" class='deleteBtn btn btn-danger'>Delete </button></td>
+	  
     </tr>
     @endforeach
   </tbody>

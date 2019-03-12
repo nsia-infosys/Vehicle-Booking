@@ -15,12 +15,12 @@
             <div class="card-header">Approve or Reject Booking</div>
               <div class="card-body">
                
-                  <form class='pending_book_form'>  
+                  <form id='updateForm'>  
 
                       @csrf
                       <input type="hidden" name='booking_id' value="">
-                      <input type="hidden" value={{ Auth::user()->id }} name='user_id'>
-                      <div class="row" style="padding-left:15px;padding-right:15px">
+                      {{--  <input type="hidden" value={{ Auth::user()->id }} name='user_id'>  --}}
+                      <div class="row" >
                           <div class=" options-approve form-group col-md-4">
                             <label for="approval"><b>{{ __('approval') }}</b> </label>&nbsp;
                             <select class='form-control form-control-sm' name='approval' id="approval">
@@ -63,9 +63,12 @@
                             <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder=" are you agree or not agree, why?"></textarea>
                             <div class="help-error"></div>
                           </div>
+                          <div class="col-md-12 clear-fix float-right">
+                            <input type="submit" value="APPROVE" class="btn float-right btn-primary">
+                            <span class="float-right">&nbsp;</span>
+                            <input type="button" value="REJECT" name='reject' class="btn float-right btn-danger">
                           
-                          <div class="col-md-6 col-sm-6 col-8 col-lg-4"><input type="submit" value="APPROVE" class="btn btn-block btn-primary"></div>
-                          <div class="col-md-6 col-sm-6 col-8 col-lg-4"> <input type="button" value="REJECT" name='reject' class="btn btn-block btn-danger"></div>
+                          </div>
                           
                         </div>      
                     </form>
@@ -114,8 +117,7 @@
             <td>{{ $data->pickup_time }}</td>
             <td>{{ $data->return_time }}</td>
             <td>{{ $data->description }}</td>
-            <td><a href="/bookings/{{ $data->booking_id }}" id="{{ $data->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-            <td><a href="/bookings/{{ $data->booking_id }}" id="{{ $data->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+            <td><a href="/bookings/{{ $data->booking_id }}" id="{{ $data->booking_id }} "class="btn btn-primary btn-sm updateBtn" data-toggle="modal" data-target="#updateModal">approve or reject</button></td>
             
         </tr>
       @endforeach

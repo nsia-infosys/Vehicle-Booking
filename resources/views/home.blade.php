@@ -27,28 +27,35 @@
                             <input type="hidden" name="id" id="id" value="">
                             <div class="form-group">
                                 <label for="name">{{ __('Name') }} </label>
-                                <input type="text" class="form-control" name='driver_name' id="driver_name" placeholder="insert name">
+                                <input type="text" class="form-control" name='name' id="name" placeholder="insert name">
                                 <div class='errorsOfDriver font-italic text-light' >
                                   <div class="help-block" id='UnameErr'></div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <label for="name">{{ __('Position') }} </label>
-                                <input type="text" class="form-control" name='driver_name' id="driver_name" placeholder="insert name">
+                                <input type="text" class="form-control" name='position' id="position" placeholder="insert name">
                                 <div class='errorsOfDriver font-italic text-light' >
                                   <div class="help-block" id='UnameErr'></div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <label for="name">{{ __('Directorate') }} </label>
-                                <input type="text" class="form-control" name='driver_name' id="driver_name" placeholder="insert name">
+                                <input type="text" class="form-control" name='directorate' id="directorate" placeholder="insert name">
+                                <div class='errorsOfDriver font-italic text-light' >
+                                  <div class="help-block" id='UnameErr'></div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label for="name">{{ __('Phone') }} </label>
+                                <input type="text" class="form-control" name='phone' id="phone" placeholder="insert name">
                                 <div class='errorsOfDriver font-italic text-light' >
                                   <div class="help-block" id='UnameErr'></div>
                                 </div>
                               </div>
                               <div class="form-group">
                                 <label for="name">{{ __('Email') }} </label>
-                                <input type="text" class="form-control" name='driver_name' id="driver_name" placeholder="insert name">
+                                <input type="text" class="form-control" name='email' id="email" placeholder="insert name">
                                 <div class='errorsOfDriver font-italic text-light' >
                                   <div class="help-block" id='UnameErr'></div>
                                 </div>
@@ -81,36 +88,35 @@
                 <div class="row">
   
                     <div class="col-md-12">
-  
                     <div class="card text-white bg-secondary ">
                     <div class="card-header">Change Password</div>
                       <div class="card-body">
-                          <form name="updateForm" id="updateForm">
+                          <form name="changePasswordForm" id="changePasswordForm">
                               @csrf
                               <input type="hidden" name="id" id="id" value="">
                               <div class="form-group">
-                                  <label for="name">{{ __('Pervious password') }} </label>
-                                  <input type="text" class="form-control" name='ppass' id="ppass" placeholder="insert pervious password">
+                                  <label for="password">{{ __('Previous password') }} </label>
+                                  <input type="password" class="form-control" name='previous_password' id="previous_password" placeholder="insert previous password">
                                   <div class='errorsOfDriver font-italic text-light' >
                                     <div class="help-block" id='UnameErr'></div>
                                   </div>
                                 </div>
                                 <div class="form-group">
-                                  <label for="name">{{ __('new password') }} </label>
-                                  <input type="text" class="form-control" name='npass' id="npass" placeholder="insert new password">
+                                  <label for="new password">{{ __('new password') }} </label>
+                                  <input type="password" class="form-control" name='new_password' id="new_password" placeholder="insert new password">
                                   <div class='errorsOfDriver font-italic text-light' >
                                     <div class="help-block" id='UnameErr'></div>
                                   </div>
                                 </div>
                                 <div class="form-group">
-                                  <label for="name">{{ __('Confirm new password') }} </label>
-                                  <input type="text" class="form-control" name='cnpass' id="cnpass" placeholder="confirm your password">
+                                  <label for="cnpass">{{ __('Confirm new password') }} </label>
+                                  <input type="password" class="form-control" name='confirm_new_password' id="confirm_new_password" placeholder="confirm your password">
                                   <div class='errorsOfDriver font-italic text-light' >
                                     <div class="help-block" id='UnameErr'></div>
                                   </div>
                                 </div>
                                 <div class="form-group clear-fix col-md-12">
-                                    <button type='submit' class='btn form-group col-sm-2 col-xs-2 float-right  btn-primary' name="saveInsert" id='saveInsert'>{{ __('Change') }}</button>
+                                    <button type='submit' class='btn form-group col-sm-2 col-xs-2 float-right  btn-primary' name="changePassword" id='changePassword'>{{ __('Change') }}</button>
                                     <span class="float-right">&nbsp</span>
                                     <button type='button' class='btn btn-dark col-sm-2 col-xs-2 float-right' name="cancel" id='cancel' data-dismiss="modal">{{ __('Cancel') }}</button>
                                   </div>
@@ -183,7 +189,7 @@
             <h4 style="color:lightgoldenrodyellow"> {{ __('My Profile') }}</h4></div>
             <div class="card-body">
 <div class="row">
-                <div class="card-group col-md-4">
+                <div class="card-group col-md-5 col-sm-12 col-xs-12">
                     <table class="table">
                            <tr> <th>{{ __('ID') }}</th> <td>{{ $user->id }}</td></tr>
                            <tr> <th>{{ __('Name') }}</th> <td>{{ $user->name }}</td></tr>
@@ -193,13 +199,14 @@
                            <tr> <th>{{ __('Phone') }}</th><td>0{{ $user->phone }}</td></tr>
                         
                         <tr> 
-                            <td></td>
-                            <td><a href="/users/{{ $user->id }}" id="{{$user->id}}" class="btn btn-primary btn-sm updateBtn">{{ __('Update') }}</a>
-                            <a href="/users/{{ $user->id }}" id="{{$user->id}}" class="btn btn-danger btn-sm passBtn">{{ __('ChangePassword') }}</a></td>
+                            
+                            <td colspan="2"><a href="/users/{{ $user->id }}" id="{{$user->id}}" class="btn btn-primary float-right btn-sm updateBtn">{{ __('Update') }}</a>
+                                <span class="float-right">&nbsp;</span>
+                            <a href="/changePassword/{{ $user->id }}" id="{{$user->id}}" class="btn btn-danger float-right btn-sm passBtn">{{ __('ChangePassword') }}</a></td>
                         </tr>
                     </table>       
                 </div> 
-                <div class="card col-md-8 col-sm-8 text-white bg-success">
+                <div class="card col-md-7 col-sm-12 text-white bg-success">
                         <div class="card-header"><h4 class="text-center">{{ __('Your Activities') }}</h4></div>
                         <div class="card-body">           
                             <h5 class='card-title'>{{ __('Approved bookings: '). $pend}}</h5>

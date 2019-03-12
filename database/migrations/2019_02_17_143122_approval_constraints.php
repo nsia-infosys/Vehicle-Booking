@@ -33,8 +33,10 @@ class approvalConstraints extends Migration
                             plate_no IS NULL AND driver_id IS NULL AND approver_description IS NOT NULL
                             AND approval_pickup_time IS NULL AND approval_return_time IS NULL 
                             AND approver_user_id IS NOT NULL)");
+   
+                        
     }
-
+   
     /**
      * Reverse the migrations.
      *

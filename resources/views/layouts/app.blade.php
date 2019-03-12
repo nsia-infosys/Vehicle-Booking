@@ -13,6 +13,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
      <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/jquery.validate.min.js') }}" defer></script>
+    <script src="{{ asset('js/jquery.datetimepicker.full.min.js') }}" defer></script>
 
     <script src="{{ asset('js/crud.js') }}" ></script>
    
@@ -24,6 +25,7 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/jquery.datetimepicker.min.css') }}" rel="stylesheet">
   </head>
 <body>
     
@@ -139,7 +141,7 @@
                                 </li>
                                @if(Auth::check())
                                 <li>
-                                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#carBooking">book a car</button>
+                                    <button type="button" class="btn btn-primary bookingBtn " data-toggle="modal" data-target="#carBooking">booking</button>
                                 </li>
                                 @endif
                                 
@@ -160,7 +162,7 @@
                                     </a>
                                     <li>
                           
-                                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#carBooking">book a car</button>
+                                      <button type="button" class="btn btn-primary bookingBtn" data-toggle="modal" data-target="#carBooking">booking</button>
                                     </li>
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
@@ -178,8 +180,20 @@
         </main>
 
         <div class="container">
-                <div id='sucDiv' class="alert alert-success" style="display: none"></div>
-                <div id='errDiv' class="alert alert-danger" style="display: none"></div>
+          <style>
+            .alertStyle{
+              position:fixed;z-index:30000;width:50%;left:25%;right:25%;bottom:4%;display: none;
+              padding: 10px; border-radius: 5px;
+            }
+          </style>
+                <div id='sucDiv' class="alertStyle" style="background-color:seagreen;color:white">
+                  <span></span>
+                  <span class="text-light btn btn-sm float-right close-alert">x</span>
+                </div>
+                <div id='errDiv' class=" alert-danger alertStyle" style="background-color:firebrick;color:wheat">
+                  <span></span>
+                    <span class="btn btn-sm text-white close-alert float-right">x</span>
+                </div>
 
                 @if(Auth::check())
                 <div id='carBooking' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -201,25 +215,39 @@
                                     
                                         <label for="destination">{{ __('Destination') }} </label>
                                         <input type="text" class="form-control" name='destination' id="destination" placeholder="insert your destination">
+                                        <div class='errorsOfDriver font-italic text-light' >
+                                            <div class="help-block" id='UnameErr'></div>
+                                          </div>
                                       </div>
                                       <div class="form-group">
                                         <label for="pickup_time">{{ __('pickup time') }}</label>
                                         <input type="text" class="form-control" name="pickup_time" id="pickup_time" placeholder="yyyy/mm/dd hh:mm">
+                                        <div class='errorsOfDriver font-italic text-light' >
+                                            <div class="help-block" id='UnameErr'></div>
+                                          </div>
                                       </div>
                                       <div class="form-group">
                                         <label for="return_time">{{ __('return time') }}</label>
                                         <input type="text" class="form-control" id="return_time" name="return_time" placeholder="yyyy/mm/dd hh:mm">
+                                        <div class='errorsOfDriver font-italic text-light' >
+                                            <div class="help-block" id='UnameErr'></div>
+                                          </div>
                                       </div>
                                     </div>
                                     <div class="col-md-6">
                                       <div class="form-group">
                                         <label for="count">{{ __('count of persons') }}</label>
                                         <input type="text" class="form-control" id="count" name="count" placeholder=" please type name of persons ">
+                                        <div class='errorsOfDriver font-italic text-light' >
+                                            <div class="help-block" id='UnameErr'></div>
+                                          </div>
                                       </div>
                                       <div class="form-group">
                                         <label for="description">{{ __('Descripion') }}</label>
-                                        <textarea type="text" class="form-control" id="description" name="description" placeholder=" more description ">
-                                        </textarea>
+                                        <textarea type="text" class="form-control" id="description" name="description" placeholder=" more description "></textarea>
+                                        <div class='errorsOfDriver font-italic text-light' >
+                                            <div class="help-block" id='UnameErr'></div>
+                                          </div>
                                         </div>
                                     
                                       <div class="form-group clear-fix">

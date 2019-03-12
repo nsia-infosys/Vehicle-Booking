@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use App\User;
+use Illuminate\Http\Request;
 
+use App\User;
+use Auth;
 use illuminate\Http\QueryException;
 use Validator;
 use DB;
@@ -16,7 +16,7 @@ class userController extends Controller
 {
     
     public function index(){
-      $countOfUsers = DB::table('users')->count();
+      $countOfUsers = DB::table('users')->where('status',true)->count();
 
       $dataOfusersTable = User::where('status',true)->orWhere('status',false)->paginate(5);
       return view('/users/index')->with(['dataOfusersTable'=>$dataOfusersTable,'countOfUsers'=>$countOfUsers]);
@@ -59,11 +59,12 @@ class userController extends Controller
                    "<td>" . $data->position . "</td>" .
                    "<td>" . $data->directorate . "</td>" .
                    "<td>" . $data->email . "</td>" .
+                   "<td>" . $data->phone . "</td>" .
                    "<td>" . $data->status . "</td>" .
+                   "<td>" . $data->approver_user_id . "</td>" .
                    "<td>" . $data->created_at . "</td>" .
                    "<td class='Af'>" . $data->updated_at . "</td>" .
                    "<td><a href='/cars/$data->id' id='$data->id' class='btn btn-primary updateBtn'>Update</a></td>      
-                   <td><a href='cars/$data->id' id='$data->id' class='deleteBtn btn btn-danger'>Delete </button></td>
                    </tr>";
                }}
   
@@ -114,27 +115,36 @@ class userController extends Controller
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'position' =>['required','string','min:4'],
             'directorate'=>['required','string','min:4'],
-            'phone' =>['required','regex:/^07[0-9]{8}/'], 
+            'phone' =>['required','regex:/^07[0-9]{8}/','unique:users'], 
         );
         $validator = Validator::make($request->all(),$rules,$passRegexMessage);
                 
         if($validator->fails()){
            
                return $validator->errors()->toArray();
-               
         }
         else{
-             User::create([
+            // return $request->input('status');
+            try{
+                DB::table('users')->insert([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'position' =>$request->input('position'),
                 'directorate' => $request->input('directorate'),
                 'phone' => $request->input('phone'),
                 'status' =>$request->input('status'),
+                'created_at'=>now(),
+                'updated_at'=>now(),
+                'approver_user_id'=>Auth::user()->id,
                 'password' => Hash::make($request->input('password')),
-            ]);
+                ]);
+
                     $id = DB::getPdo()->lastInsertId();
                      return 'successfully done '. $id ;
+            }
+            catch(QueryException $e){
+                return $e.getMessage();
+            }
        }
     }
 
@@ -161,6 +171,7 @@ class userController extends Controller
      */
      public function edit($id) {
         $data = User::find($id);
+      $data->phone =  0 . $data->phone;
      return $data;
         }
     /**
@@ -177,6 +188,7 @@ class userController extends Controller
            try{
             $user = User::find($id);
             $user->status = $request->input('status');
+            $user->approver_user_id =Auth::user()->id;
             $user->save();
                 if($user->status == 'true'){
                     return "successfully Approved";}
@@ -194,52 +206,121 @@ class userController extends Controller
 
          
     }
+    function changePassword(Request $request, $id){
+        $passRegexMessage = [
+            'new_password.regex'=>' Password must has 8 letters, at least one letter, one number and one special charecter ',
+            ];
+
+        $rules = array(
+            'previous_password' =>['required'],
+            'new_password' => ['required', 'string', 'min:8',
+            'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/']
+             
+        );
+        $ppass = $request->input('previous_password');
+        $npass = $request->input('new_password');
+        $cnpass = $request->input('confirm_new_password');
+        $data = DB::table('users')->where('id',$id)->first();
+        
+                if(Hash::check($ppass, $data->password)){
+                    if($npass === $cnpass){
+                        $validator = Validator::make($request->all(),$rules,$passRegexMessage);
+                            if($validator->fails()){
+                                return $validator->errors();
+                            }else{
+                        try{
+                            DB::table('users')->update([
+                                'password'=>Hash::make($npass)
+                            ]);
+                            return "Your passsword has changed successfully";
+                        }catch(QueryException $e){
+                        return $e.getMessage();
+                        }
+                    }
+                    }else{
+                        echo "The password confirmation does not match.";
+                        return $npass . " ".$cnpass;
+                    }
+                }else{
+                    return "wrong password";
+                }
+        
+    }
     public function update(Request $request, $id)
     {
+        $data = $this->edit($id);
+        
+    $requestUrl =  $_SERVER['HTTP_REFERER'];
+        
+        $user = User::find($id);
+        $name = $user->name = $request->input('name');
+        $email = $user->email = $request->input('email');
+        $phone = $user->phone = $request->input('phone');
+        $pass =$user->password = Hash::make($request->input('password'));
+        $position = $user->position = $request->input('position');
+        $directorate = $user->directorate =$request->input('directorate');
+        $status = $status = $request->input('status');
+        $rules = array(
+        'position' =>['required','string','min:4'],
+        'directorate'=>['required','string','min:4'],
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255'],
+        // 'password' => ['required', 'string', 'min:6', 'confirmed'],
+        'phone' =>['required','regex:/^07[0-9]{8}/'], 
+        );
+        if(strpos($requestUrl,'/home')){
+            $validator = Validator::make($request->all(),$rules);
+            if($validator->fails()){
+                return $validator->errors()->toArray();
+            } 
+            
+            if(!($data['email']==$email)){
+                $countEmail = DB::table('users')->where('email',$email)->count();
+                if($countEmail>0){ return "Duplicate Email"; }
+            }
+         
+            if(!($data['phone']==$phone)){
+                $countPhone = DB::table('users')->where('phone',$phone)->count();
+                if($countPhone>0){ return "Duplicate phone number"; }
+            }
+          
+                try{
+                     DB::table('users')
+                    ->where('id', $id)
+                    ->update(['name' => $name,'email'=>$email,'phone'=>$phone,'position'=>$position,'directorate'=>$directorate]);
+                    return "successfully Updated";
+                }
+                    catch(QueryException $e){$e.getMessage();}  
+            
+        }
+        
+    else if(strpos($requestUrl,'/users')){
+        if($status == 'true' || $status == 'false'){
+            try{
+             $user = User::find($id);
+             $user->status = $request->input('status');
+             $user->save();
+                 if($user->status == 'true'){
+                     return "successfully Approved";}
+                 if($user->status == 'false'){
+                     return "successfully Rejected";}
+            
+            }catch(QueryException $e){
+             return $e->getMessage();
+            }
+         }else{
+             return "don't change on select options";
+         } 
+    }
+        
         //
         
     //     $passRegexMessage = ['password.regex'=>' Password must has 8 letters, at least one letter, one number and one special charecter ',
     // 'phone.regex'=>'phone number must start with 07 and not be greater than 10 numbers'];
-    //    $rules = array(
-        // 'position' =>['required','string','min:4'],
-        // 'directorate'=>['required','string','min:4'],
-            // 'name' => ['required', 'string', 'max:255'],
-            // 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            // 'password' => ['required', 'string', 'min:6', 'confirmed'],
-            // 'phone' =>['required','regex:/^07[0-9]{8}/'], 
-        // );
+   
         
 
-        // $validator = Validator::make($request->all(),$rules);
-        // if($validator->fails()){
-            //    return $validator->errors()->toArray();
-        // }
-        // else{
-             // $user->name = $request->input('name');
-            // $user->email = $request->input('email');
-            // $user->phone = $request->input('phone');
-            // $user->password = Hash::make($request->input('password'));
-            // $user->position = $request->input('position');
-            // $user->directorate =$request->input('directorate');
-            $status = $request->input('status');
-            $user = User::find($id);
-            if($status == 'true' || $status == 'false'){
-                try{
-                 $user = User::find($id);
-                 $user->status = $request->input('status');
-                 $user->save();
-                     if($user->status == 'true'){
-                         return "successfully Approved";}
-                     if($user->status == 'false'){
-                         return "successfully Rejected";}
-                
-                }catch(QueryException $e){
-                 return $e->getMessage();
-                }
-             }else{
-                 return "don't change on select options";
-             }
-                     
+        // else{     
     //    }
     }
 
@@ -252,14 +333,14 @@ class userController extends Controller
     public function destroy($id,Request $yesOrNo)
     {
         //
-        $dataID = DB::table("users")->where('id',$id)->first();
-        $deleteResult = DB::table('users')->where('id',$id)->delete();
-        if($deleteResult ===1){
-        $result = "driver with ID: " .$dataID->id. " successfully deleted from table";
-        return $result; }
-        else{
-            return "Deletion not occured";
-        }
+        // $dataID = DB::table("users")->where('id',$id)->first();
+        // $deleteResult = DB::table('users')->where('id',$id)->delete();
+        // if($deleteResult ===1){
+        // $result = "driver with ID: " .$dataID->id. " successfully deleted from table";
+        // return $result; }
+        // else{
+        //     return "Deletion not occured";
+        // }
     }
 }
 

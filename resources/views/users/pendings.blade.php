@@ -32,8 +32,7 @@
 <!-- start of upadate modal box -->
 <div id='updateModal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered ">
-    <div class="modal-content bg-primary">
-     
+    <div class="modal-content bg-primary">  
       <div class="row">
         <div class="col-md-12">
           <div class="card text-white bg-secondary ">
@@ -110,27 +109,6 @@
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
-      });
-     
-      {{--  $(".updateBtn").click(function(e){
-            var user_id = $(this).attr('id');
-            e.preventDefault();
-          $("#updateModal").modal('show');
-         $.ajax({
-            method : "GET",
-            url : "/users" + "/" + user_id,
-            data: user_id,
-            success: function(data) {
-              $("#name").val(data['name']);
-              $("#position").val(data['position']);
-                
-              $("#email").val(data['email']);
-              $("#directorate").val(data['directorate']);
-            }
-          });
-      });  --}}
-    	$("#saveUpdate").click(function(){
-	      alert('saved');
       });
    });
 </script>

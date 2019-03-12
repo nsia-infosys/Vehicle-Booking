@@ -23,6 +23,7 @@ Auth::routes();
 Route::post('/users/searchUser/{data}','userController@searchUser');
 Route::get('/pendings_users','userController@pendings');
 Route::put('/approveUser/{id}','userController@approveUser');
+Route::put('/changePassword/{id}','userController@changePassword');
 Route::resource('/users', 'userController');
 
 
