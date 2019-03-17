@@ -76,10 +76,6 @@
   </div>
 </div>
 
-
-
-
-
 <h5> {{ __('Pendings: ') . $pendingsCount.', ' . __('Approved: ')  . $approvedCount .', '. __('Rejected: ') }} {{ $rejectedCount }}</h5>
     <table class="table table-bordered table-responsive table-light">
       <thead>
@@ -107,7 +103,6 @@
       <tbody>
           @foreach($bookingsData as $rowData)
           
-          @if(is_bool($rowData->approval))
         <tr>
           <th scope="row">{{$rowData->booking_id}}</th>
           <td>{{$rowData->user_id}}</td>
@@ -131,11 +126,12 @@
           <td>{{$rowData->plate_no}}</td>
           <td>{{$rowData->created_at}}</td>
           <td>{{  $rowData->updated_at}}</td>  
-               
+               @if(
+               Auth::user()->can('App_booking')&&
+               Auth::user()->can('U_booking'))
           <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-          
+                @endif
         </tr>  
-        @endif
         @endforeach
         
       </tbody>

@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -12,7 +11,7 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Auth::routes();
@@ -25,8 +24,6 @@ Route::get('/pendings_users','userController@pendings');
 Route::put('/approveUser/{id}','userController@approveUser');
 Route::put('/changePassword/{id}','userController@changePassword');
 Route::resource('/users', 'userController');
-
-
 Route::post('/cars/searchCar/{data}','carController@searchCar')->name('cars.searchCar');
 Route::resource('/cars', 'carController');
 
@@ -42,6 +39,7 @@ Route::resource('/bookings', 'bookingController');
 Route::get('/user_permissions','permissionController@user_permissions');
 Route::resource('/permissions','permissionController');
 Route::get('/user_roles','rolesController@user_roles');
+Route::get('/roles/{id}/edit2','rolesController@edit2');
 Route::resource('/roles', 'rolesController');
 
 // Route::post('/book vehical','bookVehicalController@sendData')->name('book_vehical.sendData');

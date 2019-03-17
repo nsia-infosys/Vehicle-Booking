@@ -20,6 +20,9 @@ class driverController extends Controller
      * @return \Illuminate\Http\Response
      */
 // protected $redirectTo = '/drivers';
+    public function __construct(){
+        return $this->middleware('auth');
+    }
     public function index()
     {
         $driversData = DB::table('drivers')->orderBy('driver_id','des')->paginate(5);

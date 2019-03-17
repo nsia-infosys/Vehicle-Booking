@@ -17,8 +17,13 @@ class bookingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct(){
+        
+        $this->middleware('auth');
+    }
     public function index()
     {
+
         $freeCars = DB::table('cars')->get();
         $freeDrivers = DB::table('drivers')->get();
 
@@ -31,9 +36,9 @@ class bookingController extends Controller
 
     }
     public function pendings(){
-        $freeCars = DB::table('cars')->get();
+        $freeCars = DB::table('cars')->where('status',true)->get();
 
-        $freeDrivers = DB::table('drivers')->get();
+        $freeDrivers = DB::table('drivers')->where('status',true)->get();
 
         $countPendings = DB::table('bookings')->where("approval",null)->count();
         $pendings = DB::table('bookings')->where('approval',null)->paginate(5);

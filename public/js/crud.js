@@ -309,6 +309,40 @@ else if(locPath == "/pendings_users"){
     updateData('/approveUser/','id','status');
   });
 }
+else if(locPath == "/roles"){
+
+  $("#insertForm").submit(function(e){  e.preventDefault();  insertData('/roles/','new_role_name');});
+  loadRolesUpdatingData();
+  function loadRolesUpdatingData(){  
+    $(".updateBtn").click(function(e){
+      $("#updateModal").modal('show');
+      e.preventDefault();
+      $("input[type='checkbox']").prop('checked',false);
+      var id = $(this).attr('id');
+      $.ajax({ method : "GET",  url : '/roles/'+id + "/edit2" ,  data: id,
+        success: function(data){   console.log(data);     
+
+          if(data[0]['guard_name']){$("#id").text(data[0]['id']);$("#name").text(data[0]['name']);}
+          else{
+            for(i=0;i<data.length;i++){  
+              console.log(data[i]['name']);
+              $("input[value='"+data[i]['name']+"'").prop("checked", true);
+            }
+            console.log(data[0]['id']); console.log(data[0]['role_name']); console.log(data[0]['name']);
+            $("#updateForm input:eq(1)").val(data[0]['id']);
+            $("#id").text(data[0]['id']);
+            $("#name").text(data[0]['role_name']);
+        }
+      }
+        });
+
+      });
+      $("form#updateForm").submit(function(e){
+        e.preventDefault();
+        updateData('/roles/','id','role_name');
+      });
+  }
+}
 else if(locPath == "/user_roles"){
  
       loadUpdatingData('/roles/','id','name','role_name');
@@ -347,7 +381,6 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
   
   var dataForUpdate = $("#updateForm").serialize();
   var id = $("#updateForm input:eq(1)").val();
-  
   console.log(dataForUpdate);
 
  $.ajax({
@@ -357,7 +390,7 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
     success: function(data){
       console.log(data);
       
-      if(data.indexOf("successfully")>=0 || data.indexOf("role/roles remvoed")>=0){
+      if(data.indexOf("successfully")>=0 || data.indexOf("role/roles")>=0){
         $("#sucDiv span:first-child").html(data);
         $("#updateModal").modal('hide');
         $("#sucDiv").fadeIn(100);
@@ -501,45 +534,46 @@ function insertData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
   $.ajax({
     method : "POST", url : url, data : inputsData, cache: false,
     success: function(data){
-      console.log(data);
-      if(typeof data ==="string"){ 
-        if(data.match("done")){
-          var id = data.match(/\d+/g); 
-          $("#insertModal").modal('hide'); 
-          $("#sucDiv").fadeIn(); 
-          $("#insertModal").modal('hide');
-          $("#sucDiv span:first-child").html(data); 
-          $("#sucDiv").fadeOut(6000); 
-          $("#insertForm").trigger('reset');
-          $.ajax({method: "GET",  url: url+id,  success: function(data){  
-              $(data).insertAfter("#dataTable tr:first"); 
-              if(url.indexOf('driver')>=0){
-             loadUpdatingData('/drivers/','driver_id','name','father_name','phone_no','status')
-              deleteData("/drivers/");}
-              if(url.indexOf('car')>=0){
-                loadUpdatingData('/cars/','plate_no_for_update','plate_no','color','model','type','driver_id');
-                deleteData('/cars/');
-              }
+    console.log(data);
+    if(typeof data ==="string"){ 
+      if(data.match("done")||data.indexOf('successfully')>=0){
+        alert(data);
+        var id = data.match(/\d+/g); 
+        $("#insertModal").modal('hide'); 
+        $("#sucDiv").fadeIn(); 
+        $("#sucDiv span:first-child").html(data); 
+        $("#sucDiv").fadeOut(6000); 
+        $("#insertForm").trigger('reset');
+        $.ajax({method: "GET",  url: url+id,  success: function(data){  
+          console.log(data);
+            $(data).insertAfter("#dataTable tr:first"); 
+            if(url.indexOf('driver')>=0){
+            loadUpdatingData('/drivers/','driver_id','name','father_name','phone_no','status')
+            deleteData("/drivers/");}
+            if(url.indexOf('car')>=0){
+              loadUpdatingData('/cars/','plate_no_for_update','plate_no','color','model','type','driver_id');
+              deleteData('/cars/');
             }
-
-          });
-      }
+          }
+        });
     }else{
+      if(data.indexOf('exist')>=0){
+        $("#errDiv span:first-child").html(data);
+        $("#errDiv").fadeIn();
+        $("#errDiv").fadeOut(8000);
+      }
+    }
+    
+  }else{
       console.log(data);
-     if(!(typeof data[inpName1]=="undefined")){$("#insertForm .help-block:eq(0)").html('* '+data[inpName1]);}
-        if(!(typeof data[inpName2]=="undefined")){ $("#insertForm .help-block:eq(1)").html('* '+data[inpName2]);}
-        if(!(typeof data[inpName3]=="undefined")){ $("#insertForm .help-block:eq(2)").html('* '+data[inpName3]);}
-        
-     if(!(typeof data[inpName4]=="undefined")){$("#insertForm .help-block:eq(3)").html('* '+data[inpName4]);}
-     
-     if(!(typeof data[inpName5]=="undefined")){$("#insertForm .help-block:eq(4)").html('* '+data[inpName5]);}
-     if(!(typeof data[inpName6]=="undefined")){$("#insertForm .help-block:eq(5)").html('* '+data[inpName6]);}
-     
-     alert(data[inpName8]);
-     if(!(typeof data[inpName8]=="undefined")){$("#insertForm .help-block:eq(6)").html('* '+data[inpName8]);}
-      
-      
-      }} });
+    if(!(typeof data[inpName1]=="undefined")){$("#insertForm .help-block:eq(0)").html('* '+data[inpName1]);}
+    if(!(typeof data[inpName2]=="undefined")){ $("#insertForm .help-block:eq(1)").html('* '+data[inpName2]);}
+    if(!(typeof data[inpName3]=="undefined")){ $("#insertForm .help-block:eq(2)").html('* '+data[inpName3]);}
+    if(!(typeof data[inpName4]=="undefined")){$("#insertForm .help-block:eq(3)").html('* '+data[inpName4]);}
+    if(!(typeof data[inpName5]=="undefined")){$("#insertForm .help-block:eq(4)").html('* '+data[inpName5]);}
+    if(!(typeof data[inpName6]=="undefined")){$("#insertForm .help-block:eq(5)").html('* '+data[inpName6]);}
+    if(!(typeof data[inpName8]=="undefined")){$("#insertForm .help-block:eq(6)").html('* '+data[inpName8]);}  
+    }} });
 }
 function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp10){  
   $(".updateBtn").click(function(e){
@@ -553,7 +587,6 @@ function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp1
       success: function(data) {
         console.log(data);
         if(loc.indexOf("user_roles")>=0){  
-          
           for(i=0;i<data.length;i++){ 
            console.log(data[i][inp3]);
             $("input[value='"+data[i][inp3]+"'").prop("checked", true); 
@@ -567,6 +600,8 @@ function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp1
       $("#id").text(data[0][inp1]);
       $("#name").text(data[0][inp2]);
      
+      }else if(loc.indexOf('roles')>=0){
+        console.log(data);
       }
       else if(loc.indexOf('user_permissions')>=0){
         

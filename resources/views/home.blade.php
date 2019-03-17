@@ -3,13 +3,8 @@
 @section('content')
 
 <div class="col-md-12">
-@if(!Auth::check())
-{{ __('you are not logged in') }}
-@endif
-@if(Auth::check())
+@if(Auth::check() && Auth::user()->status ==true)
    <h5 style="color:teal"> {{ __('You are logged in as ') .Auth::user()->name }}</h5>
-
-   
 <!-- start of upadate modal box -->
 <div id='updateModal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered ">
@@ -131,108 +126,24 @@
   
 
 {{--  change password  --}}
-
-
-<div class="row justify-content-center">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header text-center" style="background-color:seagreen">
-            <h4 style="color:lightgoldenrodyellow"> {{ __('Dashboard') }}</h4></div>
-            <div class="card-body">
-
-                <div class="card-group">
-
-                    <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
-                        <div class="card-header"><h4 class="text-center">Users</h4></div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ __('Total Users: '). $totalUser }} </h5>
-                            <h5 class="card-title">{{ __('Approved Users: '). $trueUser}}</h5>
-                            <h5 class="card-title">{{ __('Rejected Users: '). $falseUser}}</h5>
-                            <h5 class="card-title">{{ __('Pending Users: '). $pendingUser}}</h5>
-                        </div>
-                    </div>
-                    <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
-                        <div class="card-header"><h4 class="text-center">{{ __('Bookings') }}</h4></div>
-                        <div class="card-body">       
-                            <h5 class='card-title'>{{ __('Total Bookings: ').$totalBooking }}</h5>
-                            <h5 class="card-title">{{ __('Pending Bookings: ').$pendingBookings }}</h5>
-                            <h5 class='card-title'>{{   __('Approved Bookings: ').$ApprovedBookings }}</h5>
-                            <h5 class='card-title'>{{   __('Rejected Bookings: ').$RejectedBookings }}</h5>
-                        </div>
-                    </div>
-                    <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
-                        <div class="card-header"><h4 class="text-center">{{ __('Cars') }}</h4></div>
-                        <div class="card-body">           
-                            <h5 class='card-title'>{{ __('Total Cars: '). $totalCar}}</h5>
-                            <h5 class='card-title'>{{ __('Good Condition Cars: '). $trueCar}}</h5>
-                            <h5 class='card-title'>{{ __('Damaged Cars: '). $falseCar}}</h5>
-                        </div>
-                    </div>
-                    <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
-                        <div class="card-header"><h4 class="text-center">{{ __('Drivers') }}</h4></div>
-                        <div class="card-body">
-                            <h5 class='card-title'>{{ __('Total Drivers: '). $totalDriver}}</h5>
-                            <h5 class='card-title'>{{ __('Present Drivers: '). $trueDriver}}</h5>
-                            <h5 class='card-title'>{{ __('Absent Drivers: '). $falseDriver}}</h5>
-                        </div>
-                    </div>
-
-                </div>                
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header text-center" style="background-color:seagreen">
-            <h4 style="color:lightgoldenrodyellow"> {{ __('My Profile') }}</h4></div>
-            <div class="card-body">
-<div class="row">
-                <div class="card-group col-md-5 col-sm-12 col-xs-12">
-                    <table class="table">
-                           <tr> <th>{{ __('ID') }}</th> <td>{{ $user->id }}</td></tr>
-                           <tr> <th>{{ __('Name') }}</th> <td>{{ $user->name }}</td></tr>
-                           <tr> <th>{{ __('Position') }}</th><td>{{ $user->position }}</td></tr>
-                           <tr> <th>{{ __('Directorate') }}</th><td>{{ $user->directorate }}</td></tr>
-                           <tr> <th>{{ __('Email') }}</th><td>{{ $user->email }}</td></tr>
-                           <tr> <th>{{ __('Phone') }}</th><td>0{{ $user->phone }}</td></tr>
-                        
-                        <tr> 
-                            
-                            <td colspan="2"><a href="/users/{{ $user->id }}" id="{{$user->id}}" class="btn btn-primary float-right btn-sm updateBtn">{{ __('Update') }}</a>
-                                <span class="float-right">&nbsp;</span>
-                            <a href="/changePassword/{{ $user->id }}" id="{{$user->id}}" class="btn btn-danger float-right btn-sm passBtn">{{ __('ChangePassword') }}</a></td>
-                        </tr>
-                    </table>       
-                </div> 
-                <div class="card col-md-7 col-sm-12 text-white bg-success">
-                        <div class="card-header"><h4 class="text-center">{{ __('Your Activities') }}</h4></div>
-                        <div class="card-body">           
-                            <h5 class='card-title'>{{ __('Approved bookings: '). $pend}}</h5>
-                            <h5 class='card-title'>{{ __('Rejected Bookings: ' . $appr)}}</h5>
-                            <h5 class='card-title'>{{ __('Pending Bookings: ').$rej}}</h5>
-                            <h5 class='card-title'>{{ __('Bookings approved by you: '). $approvedByMeCount}}</h5>
-                            <h5 class='card-title'>{{ __('Bookings rejected by you: '). $rejectedByMeCount}}</h5>
-                        </div>
-                    </div>  
-</div>
-                     
-            </div>
-        </div>
-    </div>
-</div>
-
 <style>
-    .t210px {height:210px};
+    .t210px {height:400px};
+    .margin10px{margin-top: 10px;margin-bottom: 10px}
+    .btn10px{margin-bottom:10px;margin-top:10px}
 </style>
-    
-    <div class="row justify-content-center">
+
+
+<div class="text-right d-inline-block" style="margin:5px">
+        <button class="btn btn10px" style="background-color:yellowgreen" data-target="#pendingDiv" data-toggle="collapse">{{ __(' My pending bookings') }}</button>
+</div>
+    <div class="row justify-content-center collapse margin10px" id='pendingDiv'>
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header text-center" style="background-color:yellowgreen">
-                    <span style="color:darkslategray">{{ __('you have '). $pend .__(' pending bookings')}}</span>
-                    <h4 style="color:darkslategrey"> {{ __('My pending bookings') }}</h4></div>
+                    <span style="color:darkslategray;display:block">{{ __('you have '). $pend .__(' pending bookings')}}</span>
+                    <h4 style="color:darkslategrey;display:inline-block"> {{ __('My pending bookings') }}</h4>
+                    
+                </div>
 
                 <div class="card-body">
 
@@ -278,7 +189,7 @@
                                 <td>{{  $rowData->updated_at}}</td>  
                                      
                                 <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-                                <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+                                
                               </tr>  
                               @endif
                               @endforeach
@@ -292,7 +203,10 @@
     </div>
 
     
-    <div class="row justify-content-center">
+    <div class="text-right d-inline-block " style="margin:5px">
+            <button class="btn btn10px" data-target="#approvedDiv" style="color:white;background-color:dodgerblue" data-toggle="collapse">{{ __(' My approved bookings') }}</button>
+    </div>
+    <div class="row justify-content-center collapse margin10px" id='approvedDiv'>
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header text-center" style="background-color:dodgerblue">
@@ -344,7 +258,7 @@
                                         <td>{{$rowData->created_at}}</td>
                                         <td>{{  $rowData->updated_at}}</td>            
                                         <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-                                        <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+                                         
                                     </tr>  
                                 @endif
                             @endforeach
@@ -355,7 +269,12 @@
         </div>
     </div>
 
-    <div class="row justify-content-center">
+
+    
+    <div class="text-right d-inline-block" style="margin:5px">
+            <button class="btn btn10px" style="background-color:firebrick;color:white" data-target="#rejectedDiv" data-toggle="collapse">{{ __(' My rejected bookings') }}</button>
+    </div>
+    <div class="row justify-content-center collapse margin10px" id="rejectedDiv">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header text-center" style="background-color:firebrick;color:white">
@@ -398,11 +317,11 @@
                                             </td>
                                             <td>{{$rowData->approver_description}}</td>
                                             <td>{{$rowData->approver_user_id}}</td>
-                                             <td>{{$rowData->plate_no}}</td>
+                                             <td>{{  $rowData->plate_no}}</td>
                                             <td>{{$rowData->created_at}}</td>
                                             <td>{{  $rowData->updated_at}}</td>            
                                             <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-                                            <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+                                             
                                         </tr>  
                                     @endif
                                 @endforeach
@@ -413,10 +332,17 @@
             </div>
         </div>
 
-        <div class="row justify-content-center">
+    
+    
+        
+        @if(auth()->user()->can('App_booking'))
+        <div class="text-right d-inline-block" style="margin:5px">
+                <button class="btn btn10px" style="background-color:teal;color:white" data-target="#appByMeDiv" data-toggle="collapse">{{ __('Bookings approved by me') }}</button>
+        </div>
+        <div class="row justify-content-center collapse margin10px" id='appByMeDiv'>
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header text-center" style="background-color:dodgerblue;color:white">
+                    <div class="card-header text-center" style="background-color:teal;color:white">
                         
                     <span style="color:lightblue">{{ $approvedByMeCount .__(' Bookings approved by you')}}</span>
                       <h4>  {{ __('Bookings approved by me') }}</h4></div>
@@ -436,7 +362,7 @@
                                 <th scope="col">{{__('Approval_description')}}</th>
                                 <th scope="col">{{__('Approval_pickup_time')}}</th>
                                 <th scope="col">{{__('Approval_return_time')}}</th>
-                                <th scope="col">{{__('Approver_user')}}</th>
+                                <th scope="col">{{ __('Approver_user')}}</th>
                                 <th scope="col">{{__('Driver')}}</th>
                                 <th scope="col">{{__('Car')}}</th>
                                 <th scope="col">{{__('created_time')}}</th>
@@ -467,7 +393,7 @@
                                         <td>{{$rowData->created_at}}</td>
                                         <td>{{  $rowData->updated_at}}</td>            
                                         <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-                                        <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+                                         
                                     </tr>  
                                     @endif
                                 @endforeach
@@ -477,10 +403,15 @@
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
+
+
+        <div class="text-right d-inline-block" style="margin:5px">
+                <button class="btn btn10px" style="background-color:#764a2d;color:wheat" data-target="#rejByMeDiv" data-toggle="collapse">{{ __('Bookings rejected by me') }}</button>
+        </div>
+        <div class="row justify-content-center collapse margin10px" id='rejByMeDiv'>
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header text-center" style="background-color:darkred;color:white">
+                    <div class="card-header text-center" style="background-color:#764a2d;color:white">
                         
                     <span>{{ $rejectedByMeCount .__(' Bookings rejected by you')}}</span>
                       <h4>  {{ __('Bookings approved by me') }}</h4></div>
@@ -523,7 +454,7 @@
                                         <td>{{$rowData->created_at}}</td>
                                         <td>{{  $rowData->updated_at}}</td>            
                                         <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-                                        <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }}" class='deleteBtn btn btn-danger'>Delete </a></td>
+                                         
                                     </tr>  
                                     @endif
                                 @endforeach
@@ -533,6 +464,131 @@
                 </div>
             </div>
         </div>
+        @endif
+        
+@if(
+    auth()->user()->can('R_driver_car')&&
+    auth()->user()->can('C_booking')&&
+    auth()->user()->can('R_user')&&
+    auth()->user()->can('R_users_role')&&
+    auth()->user()->can('R_role')OR
+    auth()->user()->can('R_driver_car')&&
+    auth()->user()->can('C_booking')&&
+    auth()->user()->can('R_user')&&
+    auth()->user()->can('R_users_role')&&
+    auth()->user()->can('C_driver_car')&&
+    auth()->user()->can('U_driver_car')&&
+    auth()->user()->can('App_booking')&&
+    auth()->user()->can('U_booking')&&
+    auth()->user()->can('C_booking')&&
+    auth()->user()->can('C_user')&&
+    auth()->user()->can('App_user')&&
+    auth()->user()->can('C_driver_car')
+    )
+    
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header text-center" style="background-color:seagreen">
+                <h4 style="color:lightgoldenrodyellow"> {{ __('Dashboard') }}</h4></div>
+                <div class="card-body">
+    
+                    <div class="card-group">
+    
+                        <div class="card text-white bg-primary mb-3" style="max-width: 18rem;">
+                            <div class="card-header"><h4 class="text-center">Users</h4></div>
+                            <div class="card-body">
+                                
+                                <h5 class="card-title">{{ __('Total Users: '). $totalUser }} </h5>
+                                <h5 class="card-title">{{ __('Approved Users: '). $trueUser}}</h5>
+                                <h5 class="card-title">{{ __('Rejected Users: '). $falseUser}}</h5>
+                                <h5 class="card-title">{{ __('Pending Users: '). $pendingUser}}</h5>
+                            </div>
+                        </div>
+    
+                        <div class="card text-white bg-secondary mb-3" style="max-width: 18rem;">
+                            <div class="card-header"><h4 class="text-center">{{ __('Bookings') }}</h4></div>
+                            <div class="card-body">       
+                                <h5 class='card-title'>{{ __('Total Bookings: ').$totalBooking }}</h5>
+                                <h5 class="card-title">{{ __('Pending Bookings: ').$pendingBookings }}</h5>
+                                <h5 class='card-title'>{{   __('Approved Bookings: ').$ApprovedBookings }}</h5>
+                                <h5 class='card-title'>{{   __('Rejected Bookings: ').$RejectedBookings }}</h5>
+                            </div>
+                        </div>
+                        <div class="card text-white bg-success mb-3" style="max-width: 18rem;">
+                            <div class="card-header"><h4 class="text-center">{{ __('Cars') }}</h4></div>
+                            <div class="card-body">           
+                                <h5 class='card-title'>{{ __('Total Cars: '). $totalCar}}</h5>
+                                <h5 class='card-title'>{{ __('Good Condition Cars: '). $trueCar}}</h5>
+                                <h5 class='card-title'>{{ __('Damaged Cars: '). $falseCar}}</h5>
+                            </div>
+                        </div>
+                        <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
+                            <div class="card-header"><h4 class="text-center">{{ __('Drivers') }}</h4></div>
+                            <div class="card-body">
+                                <h5 class='card-title'>{{ __('Total Drivers: '). $totalDriver}}</h5>
+                                <h5 class='card-title'>{{ __('Present Drivers: '). $trueDriver}}</h5>
+                                <h5 class='card-title'>{{ __('Absent Drivers: '). $falseDriver}}</h5>
+                            </div>
+                        </div>
+    
+                    </div>                
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    
+<div class="row justify-content-center margin10px">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header text-center" style="background-color:seagreen">
+                <h4 style="color:lightgoldenrodyellow"> {{ __('My Profile') }}</h4></div>
+                <div class="card-body">
+                <div class="row">
+                    <div class="card-group col-md-5 col-sm-12 col-xs-12">
+                        <table class="table">
+                               <tr> <th>{{ __('ID') }}</th> <td>{{ $user->id }}</td></tr>
+                               <tr> <th>{{ __('Name') }}</th> <td>{{ $user->name }}</td></tr>
+                               <tr> <th>{{ __('Position') }}</th><td>{{ $user->position }}</td></tr>
+                               <tr> <th>{{ __('Directorate') }}</th><td>{{ $user->directorate }}</td></tr>
+                               <tr> <th>{{ __('Email') }}</th><td>{{ $user->email }}</td></tr>
+                               <tr> <th>{{ __('Phone') }}</th><td>0{{ $user->phone }}</td></tr>
+                            
+                            <tr> 
+                                
+                                <td colspan="2"><a href="/users/{{ $user->id }}" id="{{$user->id}}" class="btn btn-primary float-right btn-sm updateBtn">{{ __('Update') }}</a>
+                                    <span class="float-right">&nbsp;</span>
+                                <a href="/changePassword/{{ $user->id }}" id="{{$user->id}}" class="btn btn-danger float-right btn-sm passBtn">{{ __('ChangePassword') }}</a></td>
+                            </tr>
+                        </table>       
+                    </div> 
+                    <div class="card col-md-7 col-sm-12 ">
+                            <div class="" style="padding:10px"><h4 class="text-center">{{ __('One month ago of your activities') }}</h4><hr></div>
+                            <div class="card-body">           
+                                <h5 class='card-title' style="color:dodgerblue">{{ __('Total of my approved bookings: '). $appr}}</h5>
+                                <h5 class='card-title' style="color:firebrick">{{ __('Total of my Rejected Bookings: ' . $rej)}}</h5>
+                                <h5 class='card-title' style="color:yellowgreen">{{ __('Total of my pending Bookings: ').$pend}}</h5>
+                            @if(auth()->user()->can('App_booking'))    
+                                <h5 class='card-title' style="color:teal">{{ __('Total of bookings approved by you: '). $approvedByMeCount}}</h5>
+                                <h5 class='card-title' style='color:#764a2d'>{{ __('Total of bookings rejected by you: '). $rejectedByMeCount}}</h5>
+                            @endif
+                            </div>
+                        </div>  
+                    </div>
+                         
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@else
+<div class="card-body">
+<h1 class="text-center text-success">
+    {{ __('Your request for membership is waiting for approving!') }}
+</h1>
 </div>
 @endif
+
 @endsection

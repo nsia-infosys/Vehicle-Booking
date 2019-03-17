@@ -1,8 +1,24 @@
 @extends("layouts.app")
 @section('content')  
 
-  <h3>User Roles </h3>
-
+  <h3>Users Role </h3>
+<div class="row">
+        <div class="col-md-12 form-inline">
+         <div class="clear-fix"></div>
+              <form id='searchForm' class="form-inline" style="margin-bottom: 3px;">
+                @csrf
+                  <input type="text" id="searchInp" name="searchInp" class="form-control form-inline" placeholder="Search...">&nbsp
+                  <select id="searchon" name="searchon" class="form-control" method='post'>
+                      <option>{{__('Search By')}}</option>
+                      <option value="id">{{ __('User ID')}}</option>
+                      <option value="name">{{__('Name')}}</option>
+                      <option value="role">{{__('Role')}}</option>
+                  </select>&nbsp
+                  <button id='searchBtn' type="submit" class="btn btn-info form-control">Search</button><div class='clear-fix'></div>
+                  {{ csrf_field() }}
+              </form>   
+        </div>      
+</div>
 
 <!-- upadate modal box -->
 <div id='updateModal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -15,23 +31,21 @@
                   <div class="card-header">UPDATE</div>
                     <div class="card-body">
                       <div class="row">
-                        <div class="col-md-5 col-sm-6 col-xs-12 form-group" id='user_role'>
-                        <p >   {{ __('User ID: ') }}<span id='id'></span></p>
-                        <p >   {{ __('User Name: ') }}<span id='name'></span></p>
+                        <div class="col-md-12 col-sm-12 col-xs-12 form-group font-weight-light" id='user_role'>
+                        <span style="display:inline-block; margin:10px">  {{ __('User ID: ') }}</b><span id='id'></span></span>
+                        <span style="display:inline-block;margin:10px">   {{ __('User Name: ') }}</b><span id='name'></span></span>
                         </div>
-                        <div class="col-md-7 col-sm-12 col-xs-12">
+                        <div class="col-md-12 col-sm-12 col-xs-12">
                     <form id='updateForm' method="PUT">
                       @csrf
                       <input type='hidden' name='id' id='id' value=''>
                       <div class="form-group col-md-12">
                         @foreach ($roles as $role)
-                            
-                         <p> <label class="checkbox-inline"><input type="checkbox" name='role_id[]' value="{{ $role->name }}">{{ $role->name }}</label></p>
+                         <span class="d-inline-block col-md-5" style="margin:4px;">
+                            <label class="checkbox-inline"><input type="checkbox" name='role_name[]' value="{{ $role->name }}">{{ $role->name }}</label></span>
                         @endforeach
                       </div>
                     
-                       
-              
                       <div class="form-group clear-fix">
                         <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
                         <span class="float-right">&nbsp</span>
@@ -81,14 +95,14 @@
         @endforeach
       </td>
       
-  		<td class='text-center'><a href="/roles/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-sm btn-primary updateBtn">Change Role</a></td>
+  		<td class='text-center'><a href="/roles/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-sm btn-primary updateBtn">{{ __('Add/Change role') }}</a></td>
     </tr>
     @endforeach
   </tbody>
 </table>
-
+{{ $users->links() }}
 </div>
-
+</div>
 <!-- script part of page -->
 	<script type="text/javascript">
 //end of jqery                            

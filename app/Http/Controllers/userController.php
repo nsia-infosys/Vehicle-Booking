@@ -14,6 +14,9 @@ use App\Http\Controllers\Controller;
 
 class userController extends Controller
 {
+    public function __construct(){
+        return $this->middleware('auth');
+    }
     
     public function index(){
       $countOfUsers = DB::table('users')->where('status',true)->count();

@@ -1,6 +1,38 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-@section('content')
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'tmsNsia') }}</title>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
+     <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.validate.min.js') }}" defer></script>
+    <script src="{{ asset('js/jquery.datetimepicker.full.min.js') }}" defer></script>
+
+    <script src="{{ asset('js/crud.js') }}" ></script>
+   
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
+
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/jquery.datetimepicker.min.css') }}" rel="stylesheet">
+  </head>
+<body>
+
+    <div class="card-body text-center">
+        <a href="{{ url('/home') }}" class="navbar-brand">
+            <img width='220' height='80' src="{{ asset('img/logo.png') }}"></a>
+    </div>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -11,7 +43,6 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
-                       
                         <div class="form-group row">
                             <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
 
@@ -113,10 +144,14 @@
                                 </button>
                             </div>
                         </div>
+
                     </form>
+                    <div class="float-right">
+                        
+                        <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection

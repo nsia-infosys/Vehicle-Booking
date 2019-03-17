@@ -70,11 +70,10 @@
           </div>
         </div>
 
-        <nav class="navbar navbar-expand-md navbar-light navbar-laravel fixed-top">
+        <nav class="navbar navbar-expand-md navbar-light navbar-laravel fixed-top" >
             <div class="container">
-                
-                <a href="{{ url('/') }}" class="navbar-brand">
-                    <img width='140' height='50' src="{{ asset('img/logo.png') }}"></a>
+                <a href="{{ url('/home') }}" class="navbar-brand">
+                    <img width='160' height='55' src="{{ asset('img/logo.png') }}"></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -82,9 +81,10 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     
+                @if(Auth::check()&& Auth::user()->status==true)
                     <ul class="navbar-nav mr-auto">
                         <li>   
-                           
+                          
                               <a class="nav-link" href="/home">{{ __('home') }}</a>
                         </li>
                         <li>   
@@ -102,7 +102,12 @@
                               <a class="dropdown-item" href="/pending_bookings">{{ __('Pendings') }}</a>
                             </div>
                           </li>
-                       
+                  @endif
+@if(
+  auth()->user()->can('C_user')||
+  auth()->user()->can('R_user')||
+  auth()->user()->can('App_user')
+  )
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                               {{ __('Users') }}
@@ -112,6 +117,12 @@
                               <a class="dropdown-item" href="/pendings_users">{{ __('Pendings') }}</a>
                             </div>
                           </li>
+@endif
+@if(
+auth()->user()->can('C_role')&&
+auth()->user()->can('U_role')&&
+auth()->user()->can('R_role')
+)
                           <li class="nav-item dropdown">
                               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{ __('Access controller') }}
@@ -124,8 +135,9 @@
                                 <a class="dropdown-item" href="/permissions">{{ __('Permissions') }}</a>
                               </div>
                             </li>
-                       
+@endif                       
                     </ul>
+
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
@@ -141,7 +153,7 @@
                                 </li>
                                @if(Auth::check())
                                 <li>
-                                    <button type="button" class="btn btn-primary bookingBtn " data-toggle="modal" data-target="#carBooking">booking</button>
+                                    <button type="button" class="btn btn- bookingBtn " data-toggle="modal" data-target="#carBooking">booking</button>
                                 </li>
                                 @endif
                                 
@@ -160,10 +172,12 @@
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
+                                    @if(Auth::check() && Auth::user()->status==true)
                                     <li>
                           
                                       <button type="button" class="btn btn-primary bookingBtn" data-toggle="modal" data-target="#carBooking">booking</button>
                                     </li>
+                                    @endif
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
@@ -180,10 +194,12 @@
         </main>
 
         <div class="container">
+          
+
           <style>
             .alertStyle{
-              position:fixed;z-index:30000;width:50%;left:25%;right:25%;bottom:4%;display: none;
-              padding: 10px; border-radius: 5px;
+              position:fixed;z-index:30000;width:50%;left:25%;top:4%;display: none;
+              padding: 20px; border-radius: 5px;
             }
           </style>
                 <div id='sucDiv' class="alertStyle" style="background-color:seagreen;color:white">
@@ -194,8 +210,8 @@
                   <span></span>
                     <span class="btn btn-sm text-white close-alert float-right">x</span>
                 </div>
-
-                @if(Auth::check())
+                
+            @if(Auth::check() && Auth::user()->status == true)
                 <div id='carBooking' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered " style="min-width: 50%">
                     <div class="modal-content bg-primary">

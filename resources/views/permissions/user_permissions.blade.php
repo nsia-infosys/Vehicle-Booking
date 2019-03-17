@@ -27,7 +27,7 @@ use App\User;
                       <input type='hidden' name='id' id='id' value=''>
                       <div class="form-group col-md-12">
                         @foreach ($permissions as $permission)                  
-                         <p> <label class="checkbox-inline"><input type="checkbox" name='permission_id[]' value="{{ $permission->name }}">{{ $permission->name }}</label></p>
+                         <p> <label class="checkbox-inline"><input type="checkbox" name='permission_name[]' value="{{ $permission->name }}">{{ $permission->name }}</label></p>
                         @endforeach
                       </div>
                       <div class="form-group clear-fix">
