@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class NullableListOfPersonsBookings extends Migration
+class AddStatusUser extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class NullableListOfPersonsBookings extends Migration
      */
     public function up()
     {
-        //
-         DB::statement('ALTER TABLE bookings ALTER COLUMN list_of_persons DROP NOT NULL');
+        Schema::table('users', function (Blueprint $table) {
+            //
+            $table->boolean('status')->nullable();
+        });
     }
 
     /**
@@ -24,7 +26,8 @@ class NullableListOfPersonsBookings extends Migration
      */
     public function down()
     {
-        //
-        DB::statement("ALTER TABLE bookings ALTER COLUMN list_of_persons set NOT NULL");
+        Schema::table('users', function (Blueprint $table) {
+            //
+        });
     }
 }

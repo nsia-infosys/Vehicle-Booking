@@ -2,11 +2,36 @@
 @section('content')
 
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#carBooking">book a car</button>
+<table class="table table-bordered">
+	<tr>
+	<th>{{ _('User ID') }}</th>
+	<th>{{ _('Destination') }}</th>
+	<th>{{ _('Pickup Time') }}</th>
+	<th>{{ _('Return Time') }}</th>
+	<th>{{ _('Count of persons') }}</th>
+	<th>{{ _('Description') }}</th>
+	<th>{{ _('Created At') }}</th>
+	<th>{{ _('Updated At') }}</th>
+	</tr>
+@foreach ($rows as $data)
+<tr>
+	<td>{{ $data->user_id }}</td>
+	<td>{{ $data->destination }}</td>
+	<td>{{ $data->pickup_time }}</td>
+	<td>{{ $data->return_time }}</td>
+	<td>{{ $data->count }}</td>
+	<td>{{ $data->description }}</td>
+	<td>{{ $data->created_at }}</td>
+	<td>{{ $data->updated_at }}</td>
+	
+</tr>
+@endforeach
+</table>
 
 <div id='carBooking' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered " style="min-width: 50%">
 		<div class="modal-content bg-primary">
-																						<!--content-->
+								<!--content-->
 			<div class="row">
 				<div class="col-md-12">
 					<div class=" text-white bg-secondary card">
@@ -32,16 +57,16 @@
 
 									<div class="col-md-6">
 										<div class="form-group">
-					                        <label for="list_of_persons">{{ __('List of Persons') }}</label>
-					                        <input type="text" class="form-control" id="list_of_persons" name="list_of_persons" placeholder=" please type name of persons ">
+					                        <label for="count">{{ __('Count of persons') }}</label>
+					                        <input type="text" class="form-control" id="count" name="count" placeholder=" please type name of persons ">
 										</div>
 										<div class="form-group">
-					                        <label for="driver_id">{{ __('Open drivers') }}</label>
-					                        <input type="text" class="form-control" id="open_drivers" name="open_drivers" placeholder=" list of open drivers ">
+					                        <label for="driver_id">{{ __('Driver ID') }}</label>
+					                        <input type="text" class="form-control" id="driver_id" name="driver_id" placeholder=" list of open drivers ">
 										</div>
 										<div class="form-group">
-					                        <label for="list_of_persons">{{ __('Open cars') }}</label>
-					                        <input type="text" class="form-control" id="open_cars" name="open_cars" placeholder=" list of open cars ">
+					                        <label for="car_id">{{ __('Car ID') }}</label>
+					                        <input type="text" class="form-control" id="car_id" name="car_id" placeholder=" list of open cars ">
 										</div>
 										<div class="form-group clear-fix">
 					                        <button type='button' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>

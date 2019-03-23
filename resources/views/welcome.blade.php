@@ -2,5 +2,13 @@
 
 @section('content')
 
-<h1>DASHBOARD</h1>
+
+
+@php
+use DB;
+use Auth;
+
+return Auth::user()->name;
+@endphp
+<h1></h1>
 @endsection

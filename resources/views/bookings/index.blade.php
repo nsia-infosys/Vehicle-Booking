@@ -1,146 +1,145 @@
 @extends("layouts.app")
 @section('content')
-
-<!--  -->
+@if(Auth::user()->can('Update_booking'))
 <!-- Modal box-->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target=".insert-modal-lg">add new data</button>
-
-<div id='insertModal' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div id='updateModal' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered ">
     <div class="modal-content bg-primary">
-<!--content-->
-              <div class="row">
+    <!--content-->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card text-white bg-secondary ">
+          <div class="card-header">{{ __('msg.Update') }}</div>
+            <div class="card-body">
+                
+              <form action='' id='updateForm'>
+                  @csrf
+                  <input type="hidden" name='booking_id' value="">
+                  <div class="row" style="padding-left:15px;padding-right:15px">
+                      <div class=" options-approve form-group col-md-4">
+                        <label for="approval"><b>{{ __('msg.Approval') }}</b> </label>&nbsp;
+                        <select class='form-control form-control-sm' name='approval' id="approval">
+                            <option value="true">{{ __('msg.TRUE') }}</option>
+                            <option value="false">{{ __('msg.FALSE') }}</option>
+                          </select>
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label  for="car"><b>{{ __('msg.Car') }} </b></label>&nbsp;
+                        <select class='form-control form-control-sm plate_no' name='plate_no' id="plate_no">
+                            <option value="">SELECT A CAR</option>
+                            @foreach ($freeCars as $item)
+                             <option value="{{ $item->plate_no }}">
+                               {{ $item->plate_no . " _ " . $item->type ." _ " .$item->driver_id }}
+                              </option>
+                            @endforeach
+  
+                          </select>
+                      </div>
+                      <div class="form-group col-md-4">
+                        <label for="driver"><b>{{ __('msg.Driver') }} </b></label>&nbsp;
+                        <select class='form-control form-control-sm driver_id' name='driver_id' id="driver_id">
+                            <option value="">SELECT A DRIVER</option>
+                            
+                            @foreach ($freeDrivers as $item)
+                             <option value="{{ $item->driver_id }}">{{ $item->driver_id . "_" . $item->name ."_". $item->phone_no }}</option>
+                            @endforeach
+                          </select>
+                        </div>
+                      <div class="form-group col-md-12 col-sm-12 col-lg-6">
+                        <label for='approval_pickup_time'><b>{{ __('msg.Approval_pickup_time') }}</b></label>&nbsp;
+                        <input class='form-control' type='text' name="approval_pickup_time" id='approval_pickup_time' value="" placeholder="yyyy-mm-dd hh:mm">
+                      </div>
+                      <div class="form-group col-md-12 col-sm-12 col-lg-6">
+                        <label for='approval_return_time'><b>{{ __('msg.Approval_return_time') }}</b></label>&nbsp;
+                        <input class='form-control' type='text' name="approval_return_time" id='approval_return_time' value="" placeholder="yyyy-mm-dd hh:mm">
+                      </div>
+                  
+                      <div class="form-group col-md-12">
+                        <label for='approver_description'><b>{{ __('msg.Approver_description') }}</b></label>&nbsp;
+                        <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder=" are you agree or not agree, why?"></textarea>
+                        <div class="help-error"></div>
+                      </div>
+                      <div class="col-md-12">
+                 <input type="submit" value="APPROVE" class="btn float-right btn-primary">
+                 <span class="float-right">&nbsp;</span>
+                   <input type="button" value="REJECT" name='reject' class="btn float-right btn-danger">
+                      </div>
+                      
+                    </div>
+                </form>
 
-                  <div class="col-md-12">
-
-                  <div class="card text-white bg-secondary ">
-                  <div class="card-header">Update</div>
-                    <div class="card-body">
-                    <form action=''>
-                      @csrf
-                      <div class="form-group">
-                        <label for="name">{{ __('Name') }} </label>
-                        <input type="text" class="form-control" name='driver_name' id="driver_name" placeholder="insert name">
-                      </div>
-                      <div class="form-group">
-                        <label for="position">{{ __('Father Name') }}</label>
-                        <input type="text" class="form-control" name="driver_f_name" id="driver_f_name" placeholder="insert father name">
-                      </div>
-                      <div class="form-group">
-                        <label for="directorate">{{ __('Phone Number') }}</label>
-                        <input type="text" class="form-control" id="driver_phone_no" name="driver_phone_no" placeholder="insert driver phone number ">
-                      </div>
-                      <div class="form-group">
-                        <label for="formGroupExampleInput2">{{ __('Status') }}</label>
-                        <input type="text" class="form-control" id="driver_status" name="driver_status" placeholder=" stattus ">
-                      </div>
-                      <div class="form-group clear-fix">
-                        <button type='button' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
-                        <span class="float-right">&nbsp</span>
-                        <button type='button' class='btn btn-dark float-right' name="cancel" id='cancel' data-dismiss="modal">Cancel</button>
-                      </div
-                      >
-                    </form>
-                        
-                  </div>
-                </div>
-                    
-                </div>
-            </div>    </div>
-  </div>
-</div>
-
-<!-- /insert new finish  -->
-
-
-<!-- upadate modal box -->
-<div id='updateModal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered ">
-    <div class="modal-content bg-primary">
-      <!--content-->
-              <div class="row">
-
-                  <div class="col-md-12">
-
-                  <div class="card text-white bg-secondary ">
-                  <div class="card-header">Update</div>
-                    <div class="card-body">
-                    <form action=''>
-                      @csrf
-                      <div class="form-group">
-                        <label for="name">{{ __('Name') }} </label>
-                        <input type="text" class="form-control" name='driver_name' id="driver_name" placeholder="insert name">
-                      </div>
-                      <div class="form-group">
-                        <label for="position">{{ __('Father Name') }}</label>
-                        <input type="text" class="form-control" name="driver_f_name" id="driver_f_name" placeholder="insert father name">
-                      </div>
-                      <div class="form-group">
-                        <label for="directorate">{{ __('Phone Number') }}</label>
-                        <input type="text" class="form-control" id="driver_phone_no" name="driver_phone_no" placeholder="insert driver phone number ">
-                      </div>
-                      <div class="form-group">
-                        <label for="formGroupExampleInput2">{{ __('Status') }}</label>
-                        <input type="text" class="form-control" id="driver_status" name="driver_status" placeholder=" stattus ">
-                      </div>
-                      <div class="form-group clear-fix">
-                        <button type='button' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
-                        <span class="float-right">&nbsp</span>
-                        <button type='button' class='btn btn-dark float-right' name="cancel" id='cancel' data-dismiss="modal">Cancel</button>
-                      </div
-                      >
-                    </form>
-                        
-                  </div>
-                </div>
-                    
-                </div>
             </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- update modal box -->
-  <table class="table">
-  <thead class="thead-dark">
-    <tr>
-      <th scope="col">{{ __('Booking Id') }}</th>
-      <th scope="col">{{__('Start Time')}}</th>
-      <th scope="col">{{__('End Time')}}</th>
-      <th scope="col">{{__('List Of Persons')}}</th>
-      <th scope="col">{{__('Destination')}}</th>
-      <th scope="col">{{__('Approval Status')}}</th>
-      <th scope="col">{{__('Driver ID')}}</th>
-      <th scope="col">{{__('Car ID')}}</th>
-      <th scope="col">{{__('User ID')}}</th>
-      <th scope="col" colspan="2" class='text-center'>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    @foreach($bookingsData as $rowData)
-    <tr>
-      <th scope="row">{{$rowData->booking_id}}</th>
-    
-      <td>{{$rowData->start_time}}</td>
-      <td>{{$rowData->end_time}}</td>
-      <td>{{$rowData->list_of_persons}}</td>
-      <td>{{$rowData->destination}}</td>
-      <td>{{$rowData->approval}}</td>
-      <td>{{$rowData->driver_id}}</td>
-      <td>{{$rowData->car_id}}</td>
-      <td>{{$rowData->user_id}}</td>
-      <td><button type="button" class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">Update</button></td>   
-      <td><button class='deleteBtn btn btn-danger'>Delete </button></td>
-    </tr>
-    @endforeach
-  </tbody>
-</table>
-  <script type="text/javascript">
-    
-    jQuery(document).ready(function(){
-          $("#saveUpdate").click(function(){
-             alert('saved');
-          });
-         });
-</script>
-@endsection()
+@endif
+@if(Auth::user()->can('Read_booking'))
+<h5> {{ __('msg.Pendings: ') . $pendingsCount.', ' . __('msg.Approved: ')  . $approvedCount .', '. __('msg.Rejected: ') }} {{ $rejectedCount }}</h5>
+@endif
+@if(Auth::user()->can('Update_booking')||Auth::user()->can('Read_booking'))    
+<table class="table table-bordered table-responsive table-light">
+      <thead>
+        <tr>
+          <th scope="col">{{ __('msg.Booking_Id') }}</th>
+          
+          <th scope="col">{{__('msg.User')}}</th>
+          <th scope="col">{{__('msg.Destination')}}</th>
+          <th scope="col">{{__('msg.Pickup_time')}}</th>
+          <th scope="col">{{  __('msg.Return_time')}}</th>
+          <th scope="col">{{__('msg.Count')}}</th>
+          <th scope="col">{{__('msg.Description')}}</th>
+          <th scope="col">{{__('msg.Approval')}}</th>
+          <th scope="col">{{__('msg.Approver_description')}}</th>
+          <th scope="col">{{ __('msg.Approval_pickup_time')}}</th>
+          <th scope="col">{{ __('msg.Approval_return_time')}}</th>
+          <th scope="col">{{__('msg.Approver_user')}}</th>
+          <th scope="col">{{__('msg.Driver')}}</th>
+          <th scope="col">{{__('msg.Car')}}</th>
+          <th scope="col">{{__('msg.Created_at')}}</th>
+          <th scope="col">{{__('msg.Updated_at')}}</th>
+          
+      @if(Auth::user()->can('Update_booking'))
+          <th scope="col" colspan="2" class='text-center'>{{ __('msg.Action') }}</th>
+      @endif
+        </tr>
+      </thead>
+      <tbody>
+          @foreach($bookingsData as $rowData)
+          
+        <tr>
+          <th scope="row">{{$rowData->booking_id}}</th>
+          <td>{{$rowData->user_id}}</td>
+          <td>{{$rowData->destination}}</td>
+          <td>{{$rowData->pickup_time}}</td>
+          <td>{{$rowData->return_time}}</td>
+          <td>{{$rowData->count}}</td>
+          <td>{{$rowData->description}}</td>
+          <td>
+            @if($rowData->approval === true)
+              <span style="background-color:dodgerblue;border-radius:3px;padding:4px;display:inline-block">  {{  __('msg.Approved')}}</span>
+            @else
+                <span style="color:white;background-color:firebrick;border-radius:3px;padding:4px;display:inline-block">  {{  __('msg.Rejected')}}</span>
+            @endif  
+          </td>
+          <td>{{$rowData->approver_description}}</td>
+          <td>{{$rowData->approval_pickup_time}}</td>
+          <td>{{$rowData->approval_return_time}}</td>
+          <td>{{$rowData->approver_user_id}}</td>
+          <td>{{$rowData->driver_id}}</td>
+          <td>{{$rowData->plate_no}}</td>
+          <td>{{$rowData->created_at}}</td>
+          <td>{{  $rowData->updated_at}}</td>  
+      @if(Auth::user()->can('Update_booking'))
+          <td><a href="/bookings/{{ $rowData->booking_id }}" id="{{ $rowData->booking_id }} "class="btn btn-primary updateBtn" data-toggle="modal" data-target="#updateModal">{{ __('msg.Update') }}</button></td>   
+      @endif
+        </tr>  
+        @endforeach
+        
+      </tbody>
+    </table>
+ {{ $bookingsData->links() }}
+@endif
+  @endsection()
