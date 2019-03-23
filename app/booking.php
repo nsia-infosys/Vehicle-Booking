@@ -10,6 +10,6 @@ class booking extends Model
  protected $fillable=[
  	'start_time','end_time', 'destination', 'user_id','car_id', 'driver_id'
  ];
- protected $dates = ['pickup_time','return_time','approval_pickup_time','approval_return_time','created_at', 'updated_at'];
+ protected $date = ['pickup_time','return_time','approval_pickup_time','approval_return_time','created_at', 'updated_at'];
     
 }

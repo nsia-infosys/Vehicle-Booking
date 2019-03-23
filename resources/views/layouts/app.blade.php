@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html id='html' lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,11 +8,18 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'tmsNsia') }}</title>
-
+<script>
+  var lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+</script>
     <!-- Scripts -->
+    
     <script src="{{ asset('js/app.js') }}" defer></script>
-     <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/jquery.validate.min.js') }}" defer></script>
+    
+    @if(App::getLocale()=='fa')
+    <script src="{{ asset('js/messages_fa.js') }}" defer></script>
+    @endif
     <script src="{{ asset('js/jquery.datetimepicker.full.min.js') }}" defer></script>
 
     <script src="{{ asset('js/crud.js') }}" ></script>
@@ -26,6 +33,12 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('css/jquery.datetimepicker.min.css') }}" rel="stylesheet">
+    @if(App::getLocale()=='fa')
+    <link href="{{ asset('css/bootstrap-rtl.min.css') }}" rel="stylesheet">
+    <style>
+      *{direction: rtl}
+    </style>
+    @endif
   </head>
 <body>
     
@@ -69,7 +82,6 @@
             </div>
           </div>
         </div>
-
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel fixed-top" >
             <div class="container">
                 <a href="{{ url('/home') }}" class="navbar-brand">
@@ -85,57 +97,74 @@
                     <ul class="navbar-nav mr-auto">
                         <li>   
                           
-                              <a class="nav-link" href="/home">{{ __('home') }}</a>
+                              <a class="nav-link" href="/home">{{ __('msg.Home') }}</a>
+                              
                         </li>
-                        <li>   
-                            <a class="nav-link" href="/cars">{{ __('Cars') }}</a>
+                        
+                         @if(Auth::check() && Auth::user()->status==true && 
+                        Auth::user()->can('Create_driver_car')||
+                        Auth::user()->can('Update_driver_car')||
+                        Auth::user()->can('Update_status_of_driver_car')||
+                        Auth::user()->can('Read_driver_car')
+                        ) 
+                      <li>   
+                            <a class="nav-link" href="/cars">{{ __('msg.Cars') }}</a>
                       </li>
                       <li>   
-                            <a class="nav-link" href="/drivers">{{ __('Drivers') }}</a>
+                            <a class="nav-link" href="/drivers">{{ __('msg.Drivers') }}</a>
                       </li>
+                      @endif
+
+                          @if(
+                          Auth::user()->can('Read_booking')||
+                          Auth::user()->can('Approve_booking')
+                          )  
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              {{ __('Bookings') }}
+                              {{ __('msg.Bookings') }}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/bookings">{{ __('Bookings') }}</a>
-                              <a class="dropdown-item" href="/pending_bookings">{{ __('Pendings') }}</a>
+                           @if(Auth::user()->can('Update_booking')||Auth::user()->can('Read_booking'))
+                              <a class="dropdown-item" href="/bookings">{{ __('msg.Bookings') }}</a>
+                          @endif  
+                              <a class="dropdown-item" href="/pending_bookings">{{ __('msg.Pendings') }}</a>
                             </div>
                           </li>
-                  @endif
-@if(
-  auth()->user()->can('C_user')||
-  auth()->user()->can('R_user')||
-  auth()->user()->can('App_user')
-  )
+                          @endif
+                          @endif
+                          @if(
+                          auth()->user()->can('Create_user')||
+                          auth()->user()->can('Read_user')||
+                          auth()->user()->can('Approve_user'))
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              {{ __('Users') }}
+                              {{ __('msg.Users') }}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="/users">{{ __('Users') }}</a>
-                              <a class="dropdown-item" href="/pendings_users">{{ __('Pendings') }}</a>
+                              @if(Auth::user()->can('Create_user')||Auth::user()->can('Read_user'))
+                              <a class="dropdown-item" href="/users">{{ __('msg.Users') }}</a>
+                              @endif
+                              <a class="dropdown-item" href="/pendings_users">{{ __('msg.Pendings') }}</a>
                             </div>
                           </li>
-@endif
-@if(
-auth()->user()->can('C_role')&&
-auth()->user()->can('U_role')&&
-auth()->user()->can('R_role')
-)
+                          @endif
+                          @if(
+                          auth()->user()->can('Create_role')&&
+                          auth()->user()->can('Update_role')||
+                          auth()->user()->can('Read_role'))
                           <li class="nav-item dropdown">
                               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{ __('Access controller') }}
+                                {{ __('msg.Access controller') }}
                               </a>
                               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 
-                                  <a class="dropdown-item" href="/user_roles">{{ __('Users Role') }}</a>
-                                  <a class="dropdown-item" href="/user_permissions">{{ __('Users permission') }}</a>
-                                <a class="dropdown-item" href="/roles">{{ __('Roles') }}</a>
-                                <a class="dropdown-item" href="/permissions">{{ __('Permissions') }}</a>
+                                  <a class="dropdown-item" href="/user_roles">{{ __('msg.Users role') }}</a>
+                                  <a class="dropdown-item" href="/user_permissions">{{ __('msg.Users permission') }}</a>
+                                <a class="dropdown-item" href="/roles">{{ __('msg.Roles') }}</a>
+                                <a class="dropdown-item" href="/permissions">{{ __('msg.Permissions') }}</a>
                               </div>
                             </li>
-@endif                       
+                          @endif                       
                     </ul>
 
 
@@ -153,14 +182,30 @@ auth()->user()->can('R_role')
                                 </li>
                                @if(Auth::check())
                                 <li>
-                                    <button type="button" class="btn btn- bookingBtn " data-toggle="modal" data-target="#carBooking">booking</button>
+                                    <button type="button" class="btn btn- bookingBtn " data-toggle="modal" data-target="#carBooking">{{ __('msg.Booking') }}</button>
                                 </li>
                                 @endif
                                 
                             @endif
 
                         @else
-
+                          @csrf
+                          <li class="nav-item dropdown">
+                              <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                                  {{ Config::get('languages')[App::getLocale()] }}
+                              </a>
+                              <ul class="dropdown-menu ">
+                                  @foreach (Config::get('languages') as $lang => $language)
+                                      @if ($lang != App::getLocale())
+                                          <li class="nav-item dropdown">
+                                             
+                                              <a href="{{ route('lang.switch', $lang) }}" class="nav-link">{{$language}}</a>
+                                          </li>
+                                      @endif
+                                  @endforeach
+                              </ul>
+                          </li>
+                        
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name  }} <span class="caret"></span>
@@ -172,10 +217,12 @@ auth()->user()->can('R_role')
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
-                                    @if(Auth::check() && Auth::user()->status==true)
+                                    
+                                    
+                                    @if(Auth::check() && Auth::user()->status==true && Auth::user()->can('Create_booking'))
                                     <li>
                           
-                                      <button type="button" class="btn btn-primary bookingBtn" data-toggle="modal" data-target="#carBooking">booking</button>
+                                      <button type="button" class="btn btn-secondary bookingBtn" data-toggle="modal" data-target="#carBooking">{{ __('msg.Booking') }}</button>
                                     </li>
                                     @endif
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -183,6 +230,7 @@ auth()->user()->can('R_role')
                                     </form>
                                 </div>
                             </li>
+                            
                         @endguest
                     </ul>
                 </div>
@@ -196,12 +244,17 @@ auth()->user()->can('R_role')
         <div class="container">
           
 
+            @if(Auth::check() && Auth::user()->status == true)
           <style>
             .alertStyle{
               position:fixed;z-index:30000;width:50%;left:25%;top:4%;display: none;
               padding: 20px; border-radius: 5px;
             }
+            
           </style>
+          @if(App::getLocale()=='fa')
+          <style>table{direction:rtl}</style>
+          @endif
                 <div id='sucDiv' class="alertStyle" style="background-color:seagreen;color:white">
                   <span></span>
                   <span class="text-light btn btn-sm float-right close-alert">x</span>
@@ -211,7 +264,6 @@ auth()->user()->can('R_role')
                     <span class="btn btn-sm text-white close-alert float-right">x</span>
                 </div>
                 
-            @if(Auth::check() && Auth::user()->status == true)
                 <div id='carBooking' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered " style="min-width: 50%">
                     <div class="modal-content bg-primary">
@@ -219,7 +271,7 @@ auth()->user()->can('R_role')
                       <div class="row">
                         <div class="col-md-12">
                           <div class=" text-white bg-secondary card">
-                            <div class="card-header">Car booking</div>
+                            <div class="card-header">{{ __('msg.Car booking') }}</div>
                               <div class="card-body">
                                 <form action='' id='bookACar'>
                                 @csrf
@@ -229,21 +281,21 @@ auth()->user()->can('R_role')
                                         
                                         <input type="hidden" value={{ Auth::user()->id }} name='user_id'>
                                     
-                                        <label for="destination">{{ __('Destination') }} </label>
-                                        <input type="text" class="form-control" name='destination' id="destination" placeholder="insert your destination">
+                                        <label for="destination">{{ __('msg.Destination') }} </label>
+                                        <input type="text" class="form-control" name='destination' id="destination" placeholder="{{ __('msg.Insert your destination') }}">
                                         <div class='errorsOfDriver font-italic text-light' >
                                             <div class="help-block" id='UnameErr'></div>
                                           </div>
                                       </div>
                                       <div class="form-group">
-                                        <label for="pickup_time">{{ __('pickup time') }}</label>
+                                        <label for="pickup_time">{{ __('msg.Pickup_time') }}</label>
                                         <input type="text" class="form-control" name="pickup_time" id="pickup_time" placeholder="yyyy/mm/dd hh:mm">
                                         <div class='errorsOfDriver font-italic text-light' >
                                             <div class="help-block" id='UnameErr'></div>
                                           </div>
                                       </div>
                                       <div class="form-group">
-                                        <label for="return_time">{{ __('return time') }}</label>
+                                        <label for="return_time">{{ __('msg.Return_time') }}</label>
                                         <input type="text" class="form-control" id="return_time" name="return_time" placeholder="yyyy/mm/dd hh:mm">
                                         <div class='errorsOfDriver font-italic text-light' >
                                             <div class="help-block" id='UnameErr'></div>
@@ -252,24 +304,24 @@ auth()->user()->can('R_role')
                                     </div>
                                     <div class="col-md-6">
                                       <div class="form-group">
-                                        <label for="count">{{ __('count of persons') }}</label>
-                                        <input type="text" class="form-control" id="count" name="count" placeholder=" please type name of persons ">
+                                        <label for="count">{{ __('msg.Count') }}</label>
+                                        <input type="text" class="form-control" id="count" name="count" placeholder="{{ __('msg.Count of persons') }}">
                                         <div class='errorsOfDriver font-italic text-light' >
                                             <div class="help-block" id='UnameErr'></div>
                                           </div>
                                       </div>
                                       <div class="form-group">
-                                        <label for="description">{{ __('Descripion') }}</label>
-                                        <textarea type="text" class="form-control" id="description" name="description" placeholder=" more description "></textarea>
+                                        <label for="description">{{ __('msg.Description') }}</label>
+                                        <textarea type="text" class="form-control" id="description" name="description" placeholder="{{ __('msg.More description') }} "></textarea>
                                         <div class='errorsOfDriver font-italic text-light' >
                                             <div class="help-block" id='UnameErr'></div>
                                           </div>
                                         </div>
                                     
                                       <div class="form-group clear-fix">
-                                        <button type='submit' class='btn float-right btn-primary' name="reserve" id='reserve'>{{('Reserve')}}</button>
+                                        <button type='submit' class='btn float-right btn-primary' name="reserve" id='reserve'>{{  __('msg.Reserve')}}</button>
                                         <span class="float-right">&nbsp</span>
-                                        <button type='button' class='btn btn-dark float-right' name="cancel" id='cancel' data-dismiss="modal">{{('Cancel')}}</button>
+                                        <button type='button' class='btn btn-dark float-right' name="cancel" id='cancel' data-dismiss="modal">{{ __('msg.Cancel')}}</button>
                                       </div>
                                     </div>
                                   </div>

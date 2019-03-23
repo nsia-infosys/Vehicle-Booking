@@ -17,7 +17,9 @@ class permissionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function __construct(){
-        return $this->middleware('auth');
+     $this->middleware('auth');
+     
+     $this->middleware(['permission:Read_role|Update_role|Create_role|Read_users_role']);
     }
     public function index()
     {
@@ -99,41 +101,52 @@ class permissionController extends Controller
     {
         
         $user = User::find($id);
-        if(!(empty($request->permission_id))){
-            if(in_array('Do Everything',$request->permission_id))
-                {$user->givePermissionTo('Do Everything');}
-            else{$user->revokePermissionTo('Do Everything');}
-            if(in_array('Approve',$request->permission_id))
-                {$user->givePermissionTo('Approve');}
-            else{$user->revokePermissionTo('Approve');}
-            if(in_array('Booking',$request->permission_id))
-                {$user->givePermissionTo('Booking');}
-            else{$user->revokePermissionTo('Booking');}
-            if(in_array('monitor',$request->permission_id))
-                {$user->givePermissionTo('monitor');}
-            else{$user->revokePermissionTo('monitor');}
-            if(in_array('Read',$request->permission_id))
-                {$user->givePermissionTo('Read');}
-            else{$user->revokePermissionTo('Read');}
-            if(in_array('Update',$request->permission_id))
-                {$user->givePermissionTo('Update');}
-            else{$user->revokePermissionTo('Update');}
-            if(in_array('Delete',$request->permission_id))
-                {$user->givePermissionTo('Delete');}
-            else{$user->revokePermissionTo('Delete');}
-            if(in_array('Create',$request->permission_id))
-                {$user->givePermissionTo('Create');}
-            else{$user->revokePermissionTo('Create');}
+        if(!(empty($request->permission_name))){
+            if(in_array('Create_driver_car',$request->permission_name))
+                {$user->givePermissionTo('Create_driver_car');}
+            else{$user->revokePermissionTo('Create_driver_car');}
+            if(in_array('Update_driver_car',$request->permission_name))
+                {$user->givePermissionTo('Update_driver_car');}
+            else{$user->revokePermissionTo('Update_driver_car');}
+            if(in_array('Read_driver_car',$request->permission_name))
+                {$user->givePermissionTo('Read_driver_car');}
+            else{$user->revokePermissionTo('Read_driver_car');}
+            if(in_array('Approve_booking',$request->permission_name))
+                {$user->givePermissionTo('Approve_booking');}
+            else{$user->revokePermissionTo('Approve_booking');}
+            if(in_array('Update_booking',$request->permission_name))
+                {$user->givePermissionTo('Update_booking');}
+            else{$user->revokePermissionTo('Update_booking');}
+            if(in_array('Create_booking',$request->permission_name))
+                {$user->givePermissionTo('Create_booking');}
+            else{$user->revokePermissionTo('Create_booking');}
+            if(in_array('Create_user',$request->permission_name))
+                {$user->givePermissionTo('Create_user');}
+            else{$user->revokePermissionTo('Create_user');}
+            if(in_array('Read_user',$request->permission_name))
+                {$user->givePermissionTo('Read_user');}
+            else{$user->revokePermissionTo('Read_user');}
+            if(in_array('Read_users_role',$request->permission_name))
+                {$user->givePermissionTo('Read_users_role');}
+            else{$user->revokePermissionTo('Read_users_role');}
+            if(in_array('Approve_user',$request->permission_name))
+                {$user->givePermissionTo('Approve_user');}
+            else{$user->revokePermissionTo('Approve_user');}
+            if(in_array('Create_role',$request->permission_name))
+                {$user->givePermissionTo('Create_role');}
+            else{$user->revokePermissionTo('Create_role');}
+            if(in_array('Update_role',$request->permission_name))
+                {$user->givePermissionTo('Update_role');}
+            else{$user->revokePermissionTo('Update_role');}
+            if(in_array('Read_role',$request->permission_name))
+                {$user->givePermissionTo('Read_role');}
+            else{$user->revokePermissionTo('Read_role');}
+            return 'successfully permissions changed for selected user';}
+        else{$user->revokePermissionTo(Permission::all());
+         return "No permissions assigned";   
+        }
             
-
-            return 'successfully Done';}
-            else{
-                $permission = array("Create",'Delete','Update','Read',"Do Everything",'monitor','Booking','Approve');
-                foreach ($permission as $key => $per) {
-                    $user->revokePermissionTo($per);
-                }
-                return "permission/permissions remvoed for this user";
-            }
+            
         
         // $adminRole = Role::findByName('admin');
         // $adminRole->syncPermissions($insertPermission,$editPermission,$approvePermission,$removePermission);

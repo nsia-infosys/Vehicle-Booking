@@ -1,11 +1,14 @@
 @extends("layouts.app")
-@section('content')  
-<h3>User Permissions </h3>
-<h6 style="color:grey">NOTE: background color of firebrick permissions are belogns to roles, for changing please refer to user roles. </h6>
+@section('content') 
 
 @php
 use App\User;    
 @endphp
+@if(Auth::user()->can('Read_role')) 
+<h3>{{ __('msg.Users Permission') }} </h3>
+<h6 style="color:grey">{{  __('msg.Note: ') }}</h6>
+
+@if(Auth::user()->can('Update_role'))
 <!-- upadate modal box -->
 <div id='updateModal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered ">
@@ -14,12 +17,12 @@ use App\User;
               <div class="row">
                   <div class="col-md-12">
                   <div class="card text-white bg-secondary ">
-                  <div class="card-header">UPDATE</div>
+                  <div class="card-header">{{ __('msg.Update') }}</div>
                     <div class="card-body">
                       <div class="row">
                         <div class="col-md-5 col-sm-6 col-xs-12 form-group" id='user_role'>
-                        <p >   {{ __('User ID: ') }}<span id='id'></span></p>
-                        <p >   {{ __('User Name: ') }}<span id='name'></span></p>
+                        <p >   {{ __('msg.User Id: ') }}<span id='id'></span></p>
+                        <p >   {{ __('msg.User name: ') }}<span id='name'></span></p>
                         </div>
                         <div class="col-md-7 col-sm-12 col-xs-12">
                     <form id='updateForm' method="PUT">
@@ -31,9 +34,9 @@ use App\User;
                         @endforeach
                       </div>
                       <div class="form-group clear-fix">
-                        <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
+                        <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>{{ __('msg.Save') }}</button>
                         <span class="float-right">&nbsp</span>
-                        <button class='btn btn-dark float-right' name="cancelUpdate" id='cancelUpdate' data-dismiss="modal">Cancel</button>
+                        <button class='btn btn-dark float-right' name="cancelUpdate" id='cancelUpdate' data-dismiss="modal">{{ __('msg.Cancel') }}</button>
                       </div>
                       
                     </form>
@@ -48,15 +51,19 @@ use App\User;
   </div>
 </div>
 <!--  -->
+@endif
 
 <div id='driverTable'>
 	<table id='dataTable' class="table table-bordered table-light" >
   <thead>
     <tr>
-      <th scope="col">{{ __('ID') }}</th>
-      <th scope="col">{{__('Name')}}</th>
-      <th scope="col">{{__('Permissions')}}</th>
-      <th scope="col" colspan="2" class='text-center'>Action</th>
+      <th scope="col">{{ __('msg.ID') }}</th>
+      <th scope="col">{{__('msg.Name')}}</th>
+      <th scope="col">{{__('msg.Permissions')}}</th>
+      
+@if(Auth::user()->can('Update_role') )
+      <th scope="col" colspan="2" class='text-center'>{{ __('msg.Action') }}</th>
+@endif
     </tr>
   </thead>
   <tbody class='tbodyOfDriver tableOfDriver'>
@@ -93,13 +100,15 @@ use App\User;
         @endforeach
       </td>
       
-  		<td class='text-center'><a href="/permissions/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-sm btn-primary updateBtn">Change Permission</a></td>
+@if(Auth::user()->can('Update_role'))
+  		<td class='text-center'><a href="/permissions/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-sm btn-primary updateBtn">{{ __('msg.give/change permission') }}</a></td>
+@endif
     </tr>
     @endforeach
   </tbody>
 </table>
 </div>
-
+@endif
 <!-- script part of page -->
 	<script type="text/javascript">
 //end of jqery                            

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App;
 use Auth;
 use App\booking;
 use DB;
@@ -20,12 +21,15 @@ class bookingController extends Controller
     public function __construct(){
         
         $this->middleware('auth');
+        $this->middleware(['permission:Read_booking|Update_booking']);
+    
     }
+    
     public function index()
     {
 
-        $freeCars = DB::table('cars')->get();
-        $freeDrivers = DB::table('drivers')->get();
+        $freeCars = DB::table('cars')->where('status',true)->get();
+        $freeDrivers = DB::table('drivers')->where('status',true)->get();
 
         $approvedCount = DB::table('bookings')->where('approval',true)->count();
         $rejectedCount = DB::table('bookings')->where('approval',false)->wherenotnull('approver_description')->count();
@@ -41,7 +45,7 @@ class bookingController extends Controller
         $freeDrivers = DB::table('drivers')->where('status',true)->get();
 
         $countPendings = DB::table('bookings')->where("approval",null)->count();
-        $pendings = DB::table('bookings')->where('approval',null)->paginate(5);
+        $pendings = DB::table('bookings')->where('approval',null)->orderByDesc('pickup_time')->paginate(5);
        
         return view('/bookings/pendings')->with(['pendings'=>$pendings,"countPendings"=>$countPendings,
         'freeDrivers'=>$freeDrivers,'freeCars'=>$freeCars]);
@@ -72,13 +76,16 @@ class bookingController extends Controller
     public function store(Request $request)
     {
         $user_id =$request->input('user_id');
-       
+       $x=0;
         $pickup_time = $request->input('pickup_time');
         $return_time = $request->input('return_time');
         $count = $request->input('count');
         $description = $request->input('description');
         $destination = $request->input('destination');   
         $created_at = now(); $updated_at = now();
+        
+        $bookings = DB::table('bookings')->where('user_id',$user_id)->get();
+        
         $rules = array('pickup_time'=>'date|required',
         'return_time'=>'after:pickup_time|date|required',
         'count'=>'numeric|min:1',
@@ -88,8 +95,25 @@ class bookingController extends Controller
         if($validator->fails()){
             return $validator->errors()->toArray();
         }
+        
         else{
-         try{
+            $bookingArray = array();
+            foreach ($bookings as $data) {
+                $x++; 
+                if(
+                    $data->user_id == $user_id &&$data->pickup_time ==$pickup_time &&$data->return_time ==$return_time
+                 && $data->count ==$count &&$data->destination ==$destination){
+                     return "DUPLICATE";
+                     if(App::getLocale()=='fa'){
+                        $bookingArray[$x]= "رزرویشن با این مشخصات انجام گردیده است.";
+                     }else{
+                        $bookingArray[$x]= "This booking has already been taken";
+                     }
+                    
+                 }
+            }
+    
+            try{
              
                 DB::statement(DB::raw("INSERT INTO bookings (booking_id,pickup_time,return_time,count,description,destination
                 ,user_id,created_at,updated_at)
@@ -97,8 +121,10 @@ class bookingController extends Controller
                      DEFAULT,'$pickup_time','$return_time',$count,'$description','$destination',$user_id,now(),now()
                      )
                      "));
-                    
-                return "Your booking is wait for response";
+                    if(App::getLocale()=='fa'){
+                        return "رزرو شما موفقانه ثبت گردید";
+                    }
+                return "ُSuccessfully your booking saved";
         }catch(QueryException $e){
             return $e->getMessage();
         }
@@ -172,7 +198,10 @@ class bookingController extends Controller
         try{
             DB::statement(DB::raw("update bookings set approval = $approval, approver_description =
              '$approver_description',approver_user_id=$app_user_id,updated_at=now() where booking_id = $id"));
-             return "you have rejected";
+             if(App::getLocale()=='fa'){
+              return "رزرو را رد نمودید";   
+             }
+             return "you have rejected the booking";
 
         }   catch(QueryException $e){
             return $e->getMessage();
@@ -180,7 +209,7 @@ class bookingController extends Controller
        
        }else{
        
-        if($approval == true || $approval =="true"|| $approval ===true){
+        if($approval == true || $approval =="true"|| $approval === true){
             $rules = array(
                 'approval_pickup_time' => 'required|date',
                 'approval_return_time' => 'required|date|after:approval_pickup_time',
@@ -197,36 +226,17 @@ class bookingController extends Controller
                     ,approval_return_time='$approval_return_time',driver_id=$driver_id,approver_description = '$approver_description',approver_user_id=$app_user_id,
                     updated_at=now() where 
                     booking_id=$id"));
+                    if(App::getLocale()=='fa'){
+                        return "موفقانه تصویب گردید.";
+                    }
                      return "successfully approved";
                  }
                 catch(QueryException $e){
                     return $ex->getMessage();
                 }
             }
-
-      
     }
     }
-    //    if($approval){
-    //        return "Null Value";
-    //    }
-        // if(empty($request->input('approval')) || $request->input('approval')==null || $request->input('approval')==""
-        // || $request->input('approval')=="null"){
-        //     $approval_pickup_time = null;  $approval_return_time = null; $driver_id = null; $car_id =null;$approver_description =null;
-        // $rules = array("approval_pickup_time"=>"required|date_format:Y-m-d H:i:s",
-        // "approval_return_time"=>"date_format:Y-m-d H:i:s");
-        // return $request->all();
-        // die();
-        // }
-        // return $approval;
-        // $validator = Validator::make($request->all(), $rules);
-        // if($validator->fails()){
-        //     return $validator->errors()->toArray();
-        // }
-        // else{
-        //     return "There is no Error";
-        // }
-        
     }
 
     /**

@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use DB;
+use QueryException;
 
 class RegisterController extends Controller
 {
@@ -55,8 +57,8 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed','regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/'],
-            'position' =>['required','string','min:4'],
-            'directorate'=>['required','string','min:4'],
+            'position' =>['required','string','min:3'],
+            'department'=>['required','string','min:3'],
             'phone' =>['required','regex:/^07[0-9]{8}/'], 
             
         ],$passRegexMessage);
@@ -74,7 +76,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'position' => $data['position'],
-            'directorate' => $data['directorate'],
+            'department' => $data['department'],
             'phone' => $data['phone'],
             'password' => Hash::make($data['password']),
         ]);

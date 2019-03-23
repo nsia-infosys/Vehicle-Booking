@@ -1,7 +1,25 @@
 
 jQuery(document).ready(function(){
+  var lang = $('html').attr('lang');
+  var alphabet_regex_message; var phone_regex_message;var time_message;
+  var plate_message;var pass_message;
+  if(lang =='fa'){
+    alphabet_regex_message = 'به استثنای -_ و فاصله تمام سمبول ها غیر مجاز است.';
+    phone_regex_message = 'شماره تلفون باید با 07 آغاز و مجموعا دارای 10 رقم باشد.';
+    time_message = 'تاریخ باید با چارچوب 2019/01/01 00:00:00 تطابق داشته باشد.';
+    plate_message = " شماره پلیت باید میان 100 الی 99999 باشد. ";
+    pass_message = ' مقدار پسورد از 8 رقم کمتر نباشد، حد اقل یک سمبول ، یک شماره و یک حرف ضروری می باشد. ';
+  }
+  else{
+    alphabet_regex_message = 'Only using of alphabets, spaces, and - _ is allowed';
+    phone_regex_message = "Phone now must start with 07 and should has 10 digits.";
+    time_message = 'Date format should be like 2019/01/01 01:00';
+    plate_message ="Plate number should not has more than 5 and less than3 digits.";
+    pass_message = "Minimum eight characters, at least one letter, one number and one special character";
+
+  }
   $(".close-alert").click(function(){
-    $("#errDiv,#sucDiv").fadeOut(1000);
+    $("#errDiv,#sucDiv").fadeOut();
   });
   $("#sucDiv,#errDiv").mouseover(function(){
         if($(this).is(':animated')) {
@@ -53,7 +71,7 @@ function insertBooking(){
     url: "/bookings/",
     data: dataForm,
     success:function(data){
-      if(data.indexOf('Approved')>=0){
+      if(data.indexOf('Approved')>=0 ||data.indexOf('تصویب')>=0){
       element.fadeOut(1000);
      $("#errDiv").fadeOut();$("#sucDiv span:first-child").html(data);  $("#sucDiv").fadeIn();
     }
@@ -68,6 +86,7 @@ function insertBooking(){
 
 validateVehicalBook();
 function validateVehicalBook(){
+  
   var validator = $("#bookACar").validate({
     rules:{
       destination: {required:true,minlength:5},
@@ -79,10 +98,11 @@ function validateVehicalBook(){
     },
     messages:{
       pickup_time:{
-        regex: "date format is 2019/01/01 01:00",
+        regex: time_message,
+        
       },
       return_time:{
-        regex: "date format is 2019/01/01 01:00",
+        regex: time_message,
       }
     }
   });
@@ -100,7 +120,7 @@ $("#bookACar").submit(function(e){
       success: function(data){
         console.log(data);
         if(typeof data === 'string'){
-          if(data.indexOf('response')>=0){
+          if(data.indexOf('Successfully')>=0 ||data.indexOf('موفقانه')>=0  ){
         $("#carBooking").modal('hide');
         $("#sucDiv span:first-child").html(data);
         $("#sucDiv").fadeIn();
@@ -146,7 +166,7 @@ if(loc.indexOf('driver')>=0){
   $("#searchInp").keyup(function(e){
     e.preventDefault();
   
-    if($('#searchon option:selected').text()=="Search By"){
+    if($('#searchon option:selected').text()=="Search by"){
       $("#searchon").focus(); }else{searchData('post','/drivers/searchDriver/');}
   
   });
@@ -182,13 +202,13 @@ else if(loc.indexOf('car')>=0){
   //search part
   $("#searchInp").keyup(function(e){
     e.preventDefault();
-    if($('#searchon option:selected').text()=="Search By"){$("#searchon").focus(); }
+    if($('#searchon option:selected').text()=="Search by"){$("#searchon").focus(); }
     else{searchData('POST','/cars/searchCar/');}
   });
 }
 else if(locPath == '/users'){  
   validateUserInsert();
-  loadUpdatingData('/users/','id','position','directorate','status');
+  loadUpdatingData('/users/','id','status');
   validateUserUpdate();
   deleteData("/users/");
 
@@ -198,7 +218,7 @@ else if(locPath == '/users'){
     if(validateUserInsert().valid()){
       $(".help-block").text('');
       if(!($(".error").text())){
-          insertData('/users/','position','directorate','status');
+          insertData('/users/','position','department','status');
         }
       }
   });
@@ -216,7 +236,7 @@ else if(locPath == '/users'){
   // search part
   $("#searchInp").keyup(function(e){
     e.preventDefault();
-    if($('#searchon option:selected').text()=="Search By"){$("#searchon").focus(); }
+    if($('#searchon option:selected').text()=="Search by"){$("#searchon").focus(); }
     else{searchData('POST','/users/searchUser/');}
   });
   
@@ -226,7 +246,7 @@ else if(locPath == '/home'){
   $(".passBtn").click(function(e){
     e.preventDefault();
     var id = $(this).attr('id');
-    alert(id);
+   
     $("#changePasswordForm input[name='id']").val(id);
   });
   $("#changePasswordForm").submit(function(e){
@@ -242,8 +262,11 @@ else if(locPath == '/home'){
       success:function(data){
         console.log(data);
         if(typeof data === 'string'){
-        if(data.indexOf('successfully')>=0){
+        if(data.indexOf('successfully')>=0||data.indexOf('موفقانه')>=0){
           $("#passModal").modal('hide');
+          $("#sucDiv span:first-child").text(data);
+          $("#sucDiv").fadeIn();
+          $("#sucDiv").fadeOut(4000);
         }else{
           if(data == "wrong password"){
           $("#changePasswordForm .help-block:eq(0)").html('* ' +data);}
@@ -267,7 +290,7 @@ else if(locPath == '/home'){
     $("#passModal").modal('show');
   });
   validateUserInsert();
-  loadUpdatingData('/users/','id','name','position','directorate','phone','email');
+  loadUpdatingData('/users/','id','name','position','department','phone','email');
   validateUserUpdate();
   deleteData("/users/");
 
@@ -277,7 +300,7 @@ else if(locPath == '/home'){
     if(validateUserInsert().valid()){
       $(".help-block").text('');
       if(!($(".error").text())){
-          insertData('/users/','position','directorate','status');
+          insertData('/users/','position','department','status');
         }
       }
   });
@@ -287,7 +310,7 @@ else if(locPath == '/home'){
   if(validateUserUpdate().valid()){
       if(!($(".error").text())){
         $(".help-block").text('');
-        updateData('/users/','status');
+        updateData('/users/','id','name','position','department','phone','email');
       }
     }
   });
@@ -295,17 +318,17 @@ else if(locPath == '/home'){
   // search part
   $("#searchInp").keyup(function(e){
     e.preventDefault();
-    if($('#searchon option:selected').text()=="Search By"){$("#searchon").focus(); }
+    if($('#searchon option:selected').text()=="Search by"){$("#searchon").focus(); }
     else{searchData('POST','/users/searchUser/');}
   });
   
 }
 else if(locPath == "/pendings_users"){
   loadUpdatingData('/users/','id');
-
+ 
   $("#updateForm").submit(function(e){
     e.preventDefault();
-    alert('submit');
+   
     updateData('/approveUser/','id','status');
   });
 }
@@ -381,16 +404,70 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
   
   var dataForUpdate = $("#updateForm").serialize();
   var id = $("#updateForm input:eq(1)").val();
-  console.log(dataForUpdate);
-
+  
  $.ajax({
     method: "PUT",
     url: url + id,
     data: dataForUpdate,
     success: function(data){
       console.log(data);
-      
-      if(data.indexOf("successfully")>=0 || data.indexOf("role/roles")>=0){
+      if(typeof data === 'object'){
+        if(loc.indexOf('/home')>=0){
+          
+        if(!(typeof data[inpName4]=="undefined")){
+          $("#updateForm .help-block:eq(2)").html('* '+data[inpName4]);}
+        }
+        else{
+            if(!(typeof data[inpName1]=="undefined")){
+              $("#updateForm .help-block:eq(0)").html('* '+data[inpName1]);}
+
+            if(!(typeof data[inpName2]=="undefined")){
+              $("#updateForm .help-block:eq(1)").html('* '+data[inpName2]);}
+
+            if(!(typeof data[inpName3]=="undefined")){
+              $("#updateForm .help-block:eq(2)").html('* '+data[inpName3]);}
+            
+            if(!(typeof data[inpName4]=="undefined")){
+              $("#updateForm .help-block:eq(3)").html('* '+data[inpName4]);}
+          
+            if(!(typeof data[inpName5]=="undefined")){
+              $("#updateForm .help-block:eq(4)").html('* '+data[inpName5]);}
+          
+            if(!(typeof data[inpName6]=="undefined")){
+              $("#updateForm .help-block:eq(5)").html('* '+data[inpName6]);}
+          
+            if(!(typeof data[inpName7]=="undefined")){
+              $("#updateForm .help-block:eq(6)").html('* '+data[inpName7]);}
+
+            if(!(typeof data[inpName8]=="undefined")){
+              $("#updateForm .help-block:eq(7)").html('* '+data[inpName8]);} 
+
+            if(!(typeof data[inpName9]=="undefined")){
+              $("#updateForm .help-block:eq(8)").html('* '+data[inpName9]);}  
+
+            if(!(typeof data[inpName10]=="undefined")){
+              $("#updateForm .help-block:eq(9)").html('* '+data[inpName10]);}
+          }
+          if(!(typeof data[0]=="undefined")){
+            if(data[0].indexOf("plate number")>=0||data[0].indexOf("پلیت نمبر")>=0){
+              $("#updateForm .help-block:eq(0)").html("* "+data[0]);
+            }
+            }
+          if(!(typeof data[1]=="undefined")){
+            if(data[1].indexOf('there is no driver exist with this id')>=0){
+              $('#updateForm .help-block:eq(5)').html('* ' +data[1]);
+            }
+          }
+
+          if(!(typeof data[2]=="undefined")){
+            if(data[2].indexOf('no driver registered')>=0){
+            
+              $('#updateForm .help-block:eq(5)').html("* "+data[2]);
+            }
+          }
+        }
+    else if(data.indexOf("successfully")>=0 || data.indexOf("role/roles")>=0||data.indexOf('موفقانه')>=0||data.indexOf('abrog')>=0
+    ||data.indexOf('معلق')>=0){
         $("#sucDiv span:first-child").html(data);
         $("#updateModal").modal('hide');
         $("#sucDiv").fadeIn(100);
@@ -406,61 +483,14 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
             $('body').css('overflow','hidden');
             $('#noUpdateModal').modal('show');
              }else{
-                  if(data.indexOf("phone no has already been taken")>=0){
+                  if(data.indexOf("phone no has already been taken")>=0||data.indexOf('این شماره مربوط راننده دیگر می باشد')>=0){
                   $("#updateForm .help-block:eq(2)").html("* "+data);}
 
                   if(data.indexOf("there is no driver")>=0){
                     $("#updateForm .help-block:eq(5)").html("* "+data);
                   } 
               }
-           }else{
-          if(!(typeof data[0]=="undefined")){
-            if(data[0].indexOf("plate number")>=0){
-              $("#updateForm .help-block:eq(0)").html("* "+data[0]);}
-            }
-          if(!(typeof data[1]=="undefined")){
-            if(data[1].indexOf('there is no driver exist with this id')>=0){
-              $('#updateForm .help-block:eq(5)').html('* ' +data[1]);
-            }
-          }
-
-          if(!(typeof data[2]=="undefined")){
-            if(data[2].indexOf('no driver registered')>=0){
-              alert(data[2]);
-              $('#updateForm .help-block:eq(5)').html("* "+data[2]);
-            }
-          }
-          
-        if(!(typeof data[inpName1]=="undefined")){
-          $("#updateForm .help-block:eq(0)").html('* '+data[inpName1]);}
-
-        if(!(typeof data[inpName2]=="undefined")){
-          $("#updateForm .help-block:eq(1)").html('* '+data[inpName2]);}
-
-        if(!(typeof data[inpName3]=="undefined")){
-          $("#updateForm .help-block:eq(2)").html('* '+data[inpName3]);}
-        
-        if(!(typeof data[inpName4]=="undefined")){
-          $("#updateForm .help-block:eq(3)").html('* '+data[inpName4]);}
-      
-        if(!(typeof data[inpName5]=="undefined")){
-          $("#updateForm .help-block:eq(4)").html('* '+data[inpName5]);}
-      
-        if(!(typeof data[inpName6]=="undefined")){
-          $("#updateForm .help-block:eq(5)").html('* '+data[inpName6]);}
-      
-        if(!(typeof data[inpName7]=="undefined")){
-          $("#updateForm .help-block:eq(6)").html('* '+data[inpName7]);}
-
-        if(!(typeof data[inpName8]=="undefined")){
-          $("#updateForm .help-block:eq(7)").html('* '+data[inpName8]);} 
-
-        if(!(typeof data[inpName9]=="undefined")){
-          $("#updateForm .help-block:eq(8)").html('* '+data[inpName9]);}  
-
-        if(!(typeof data[inpName10]=="undefined")){
-          $("#updateForm .help-block:eq(9)").html('* '+data[inpName10]);}
-        }
+           }
       }
     }
   });
@@ -505,6 +535,7 @@ function searchData(method,url){
     url: url+data,
     data: data,
     success: function(data){
+      console.log(data);
       $(".tableOfDriver").empty();
       if(data == "Data not found!"){
         $("#driverTable").hide();
@@ -513,13 +544,15 @@ function searchData(method,url){
       $(".tableOfDriver").html(data);
       if(loc.indexOf('driver')>=0){
       loadUpdatingData('/drivers/','driver_id','name','father_name','phone_no','status');
-      deleteData("/drivers/");}
+      // deleteData("/drivers/");
+    }
       else if(loc.indexOf('car')>=0){
       loadUpdatingData('/cars/','plate_no_for_update','plate_no','color','model','type','driver_id');
-      deleteData("/cars/"); }
+      // deleteData("/cars/"); 
+    }
       else if(loc.indexOf('user')>=0){
         loadUpdatingData('/users/','id','position');
-        deleteData('/users/');
+        // deleteData('/users/');
       }
 
       }
@@ -536,8 +569,8 @@ function insertData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
     success: function(data){
     console.log(data);
     if(typeof data ==="string"){ 
-      if(data.match("done")||data.indexOf('successfully')>=0){
-        alert(data);
+      if(data.match("done")||data.indexOf('successfully')>=0||data.indexOf('موفقانه')>=0){
+        
         var id = data.match(/\d+/g); 
         $("#insertModal").modal('hide'); 
         $("#sucDiv").fadeIn(); 
@@ -586,6 +619,7 @@ function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp1
       data: id,
       success: function(data) {
         console.log(data);
+        
         if(loc.indexOf("user_roles")>=0){  
           for(i=0;i<data.length;i++){ 
            console.log(data[i][inp3]);
@@ -622,7 +656,14 @@ function loadUpdatingData(urlN,inp1,inp2,inp3,inp4,inp5,inp6,inp7,inp8,inp9,inp1
         $("#updateForm input:eq(2)").val(data[inp2]);
         $("#updateForm input:eq(3)").val(data[inp3]);
       }
-      
+      else if(loc.indexOf('/home')>=0){
+        $("select[name='department']").val(data[inp4]);
+        $("#updateForm input:eq(1)").val(data[inp1]);
+        $("#updateForm input:eq(2)").val(data[inp2]);
+        $("#updateForm input:eq(3)").val(data[inp3]);
+        $("#updateForm input:eq(4)").val(data[inp5]);
+        $("#updateForm input:eq(5)").val(data[inp6]);
+      }
       else{        
         $("#updateForm input:eq(1)").val(data[inp1]);
         $("#updateForm input:eq(2)").val(data[inp2]);
@@ -653,10 +694,10 @@ function validatePendingBookings(){
     },
     messages:{
       approval_pickup_time:{
-        regex: "date format is 2019/01/01 01:00",
+        regex: time_message,
       },
       approval_return_time:{
-        regex: "date format is 2019/01/01 01:00",
+        regex: time_message,
       }
     }
   });
@@ -665,7 +706,7 @@ function validatePendingBookings(){
 function validateCarUpdate(){
     var validator = $("#updateForm").validate({ 
       rules: {
-        plate_no: {required:true,required:true,regex:/^[0-9]+$/, range:[100,999999]},
+        plate_no: {required:true,required:true,regex:/^[0-9]+$/, range:[100,99999]},
         car_color: {required:true,minlength:3},
         car_status: {required:true},
         car_type: {required:true},
@@ -674,7 +715,7 @@ function validateCarUpdate(){
       }, 
       messages:{
         plate_no:{
-          regex: "please insert a valid number plate for example 44928"
+          regex: plate_message,
         }
       } 
     });
@@ -692,25 +733,29 @@ function validateCarInsert(){
       }, 
       messages:{
         plate_no:{
-          regex: "please insert a valid number plate for example 44928"
+          regex: plate_message,
         }
       } 
     });
     return validator;
 }
 function validateDriverInsert(){
+  
     var validator = $("#insertForm").validate({ 
       rules: {
-        name :{required:true,regex:/^[a-zA-Z_-\s]+$/,minlength:3},
-        father_name: {required:true,regex:/^[a-zA-Z_-\s]+$/,minlength:3},
+        name :{required:true,regex:/^[a-zA-Z_-\s]+$|^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF_-\s]+$/,minlength:3},
+        father_name: {required:true,regex:/^[a-zA-Z_-\s]+$|^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF_-\s]+$/,minlength:3},
         phone_no :{required:true,  regex: /^07[0-9]{8}$/},
       }, 
       messages:{
         name:{
-          regex: "using of alphabets, spaces, and - _ is allowed"
+          regex: alphabet_regex_message
         },
         father_name:{
-          regex: "using of alphabets, spaces, and - _ is allowed"
+          regex: alphabet_regex_message
+        },
+        phone_no : {
+          regex: phone_regex_message
         }
       } 
     });
@@ -720,16 +765,19 @@ function validateDriverInsert(){
 function validateDriverUpdate(){
     var validatorUpdate = $("#updateForm").validate({ 
       rules: {
-        driver_name :{required:true,regex:/^[a-zA-Z_-\s]+$/,minlength:3},
-        driver_father_name: {required:true,regex:/^[a-zA-Z_-\s]+$/,minlength:3},
+        driver_name :{required:true,regex:/^[a-zA-Z_-\s]+$|^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF_-\s]+$/,minlength:3},
+        driver_father_name: {required:true,regex:/^[a-zA-Z_-\s]+$|^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF_-\s]+$/,minlength:3},
         driver_phone_no :{required:true,  regex: /^07[0-9]{8}$/},
       }, 
       messages:{
         driver_name:{
-          regex: "using of alphabets, spaces, and - _ is allowed"
+          regex: alphabet_regex_message
         },
         driver_father_name:{
-          regex: "using of alphabets, spaces, and - _ is allowed"
+          regex: alphabet_regex_message
+        },
+        driver_phone_no:{
+          regex: phone_regex_message
         }
     } 
   });
@@ -742,18 +790,21 @@ function validateUserInsert(){
       email: {required:true,email:true},
       password :{required:true,regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/},
       position :{required:true},
-      directorate :{required:true},
-      name :{required:true},
+      department :{required:true},
+      name :{required:true,regex:/^[a-zA-Z_-\s]+$|^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF_-\s]+$/},
       password_confirmation :{required:true,equalTo:"#password"},
       
     }, 
     messages:{
       plate_no:{
-        regex: "please insert a valid number plate for example 44928"
+        regex: plate_message,
       },
       password:{
-        regex: "Minimum eight characters, at least one letter, one number and one special character",
+        regex: pass_message,
       },
+      name:{
+        regex:alphabet_regex_message
+      }
     } 
   });
   return validator;
@@ -769,7 +820,7 @@ function validatePasswordChange(){
     messages:{
       
       new_password:{
-        regex: "Minimum eight characters, at least one letter, one number and one special character",
+        regex: pass_message,
       },
     } 
   });
@@ -782,18 +833,21 @@ function validateUserUpdate(){
       email: {required:true,email:true},
       password :{required:true,regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/},
       position :{required:true},
-      directorate :{required:true},
+      department :{required:true},
       name :{required:true},
       password_confirmation :{required:true,equalTo:"#password"},
       
     }, 
     messages:{
       plate_no:{
-        regex: "please insert a valid number plate for example 44928"
+        regex: plate_message
       },
       password:{
-        regex: "Minimum eight characters, at least one letter, one number and one special character",
+        regex: pass_message
       },
+      phone:{
+        regex: phone_regex_message
+      }
     } 
   });
   return validator;
@@ -830,7 +884,7 @@ $("input[name='reject']").click(function(){
       url: "/bookings/"+id,
       data: formData,
       success: function(data){
-        if(data.indexOf('rejected')>=0){
+        if(data.indexOf('rejected')>=0 || data.indexOf('رد')>=0){
         
         $('#sucDiv span:first-child').html(data);
         $('#sucDiv').fadeIn();
@@ -848,7 +902,7 @@ $(".pending_book_form").submit(function(e){
   console.log(id);
   var formData = $(this).serialize();
  var divFadeOut = $(this).parent('div').parent('div');
- alert(id);
+
   console.log(formData);
   $.ajax({
     method: "PUT",
@@ -869,7 +923,7 @@ function loadBookingUpdatingData(){
   $("#plate_no").val();
     e.preventDefault();
     var id = $(this).attr('id');
-    alert(id);
+  
     $.ajax({
       method : "GET",
       url : "/bookings/"+id + "/edit" ,
@@ -892,9 +946,7 @@ function loadBookingUpdatingData(){
         $("#approval").append("<option value='true'>true</option>");
         
       }
-
-      
-      // $("#plate_no").val(data['plate_no']);
+        // $("#plate_no").val(data['plate_no']);
         // $("#plate_no").append("<option selected value='"+data['plate_no']+"'>"+data['plate_no']+"</option>");
         $("#approval_pickup_time").val(data['bookings']['approval_pickup_time']);
         $("#approval_return_time").val(data['bookings']['approval_return_time']);

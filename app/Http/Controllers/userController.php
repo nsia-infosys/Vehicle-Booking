@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\User;
 use Auth;
+use App;
 use illuminate\Http\QueryException;
 use Validator;
 use DB;
@@ -15,21 +16,30 @@ use App\Http\Controllers\Controller;
 class userController extends Controller
 {
     public function __construct(){
-        return $this->middleware('auth');
+
+        $this->middleware('auth');
+        $this->middleware(['permission:Read_user|Approve_user|Create_user']);
     }
     
     public function index(){
       $countOfUsers = DB::table('users')->where('status',true)->count();
-
-      $dataOfusersTable = User::where('status',true)->orWhere('status',false)->paginate(5);
+      $dataOfusersTable = User::where('status',true)->orWhere('status',false)->orderBy('created_at','DESC')->paginate(5);
+      
       return view('/users/index')->with(['dataOfusersTable'=>$dataOfusersTable,'countOfUsers'=>$countOfUsers]);
        }
        public function searchUser(Request $request){
+        if(App::getLocale()=='fa'){
+            $update = 'تجدید';
+            $notFound = 'به این مشخصات معلوماتی وجود ندارد';
+        }else{
+            $update = 'Update';
+            $notFound = 'Data not found!';
+        }
         
         $searchOn = $request->input('searchon');
         $searchInput= $request->input('searchInp');
-          
-          if($searchOn == "user_id"){
+        
+          if($searchOn == "id"){
           $dataArray = DB::table('users')->where("id",'LIKE',"%$searchInput%")->get();
           $dataCount = DB::table('users')->where("id",'LIKE',"%$searchInput%")->count();}
   
@@ -41,43 +51,53 @@ class userController extends Controller
           $dataArray = DB::table('users')->where("position",'LIKE',"%$searchInput%")->get();
           $dataCount = DB::table('users')->where("position",'LIKE',"%$searchInput%")->count();}
   
-          if($searchOn == "directorate"){
-          $dataArray = DB::table('users')->where("directorate",'LIKE',"%$searchInput%")->get();
-          $dataCount = DB::table('users')->where("directorate",'LIKE',"%$searchInput%")->count();}
+          if($searchOn == "department"){
+          $dataArray = DB::table('users')->where("department",'LIKE',"%$searchInput%")->get();
+          $dataCount = DB::table('users')->where("department",'LIKE',"%$searchInput%")->count();}
   
           if($searchOn == "status"){
               if($searchInput == 'a'){$searchInput = str_replace('a', false, false);}
           $dataArray = DB::table('users')->where("status",'LIKE',"%$searchInput%")->get();
           $dataCount = DB::table('users')->where("status",'LIKE',"%$searchInput%")->count();}
-          if($searchOn == "id"){
-          $dataArray = DB::table('users')->where("id",'LIKE',"%$searchInput%")->get();
-          $dataCount = DB::table('users')->where("id",'LIKE',"%$searchInput%")->count();}
+          if($searchOn == "email"){
+          $dataArray = DB::table('users')->where("email",'LIKE',"%$searchInput%")->get();
+          $dataCount = DB::table('users')->where("email",'LIKE',"%$searchInput%")->count();}
+          if($searchOn == "approver_user_id"){
+          $dataArray = DB::table('users')->where("approver_user_id",'LIKE',"%$searchInput%")->get();
+          $dataCount = DB::table('users')->where("approver_user_id",'LIKE',"%$searchInput%")->count();}
+          if($searchOn == "phone"){
+          $dataArray = DB::table('users')->where("phone",'LIKE',"%$searchInput%")->get();
+          $dataCount = DB::table('users')->where("phone",'LIKE',"%$searchInput%")->count();}
+         
           if($dataCount >0 ){
              
           foreach ($dataArray as $data) {
-              if($data->status === false){$data->status = 'False';}else{$data->status='True';}
+              if($data->status === false){$data->status = 'False';}else if($data->status == ''){$data->status='';}else{$data->status='True';}
               echo 
+              "<tr>".
                    "<td>" . $data->id . "</td>".
                    "<td>" . $data->name . "</td>".
                    "<td>" . $data->position . "</td>" .
-                   "<td>" . $data->directorate . "</td>" .
+                   "<td>" . $data->department . "</td>" .
                    "<td>" . $data->email . "</td>" .
                    "<td>" . $data->phone . "</td>" .
                    "<td>" . $data->status . "</td>" .
                    "<td>" . $data->approver_user_id . "</td>" .
                    "<td>" . $data->created_at . "</td>" .
                    "<td class='Af'>" . $data->updated_at . "</td>" .
-                   "<td><a href='/cars/$data->id' id='$data->id' class='btn btn-primary updateBtn'>Update</a></td>      
+                   "<td><a href='/cars/$data->id' id='$data->id' class='btn btn-primary btn-sm updateBtn'>$update</a></td>      
                    </tr>";
                }}
   
-               else{return "<tr><td colspan='8'><div class='card bg-light text-dark'><div class='card-body text-center' id='notFound'><h1>Data not found!</h1></div></div></td></tr>";}
+               else{
+                   
+return "<tr><td colspan='11'><div class='card bg-light text-dark'><div class='card-body text-center' id='notFound'><h1>$notFound</h1></div></div></td></tr>";}
         
         }
         public function pendings(){
         
             $countPendings = DB::table('users')->where("status",null)->count();
-            $pendings = User::where('status',null)->paginate(5);
+            $pendings = User::where('status',null)->orderBy('created_at','DESC')->paginate(5);
             $permissions = DB::table('permissions')->get();
            
             return view('/users/pendings')->with(['pendings'=>$pendings,"countPendings"=>$countPendings,'permissions'=>$permissions
@@ -115,9 +135,9 @@ class userController extends Controller
        $rules = array(
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'position' =>['required','string','min:4'],
-            'directorate'=>['required','string','min:4'],
+            'password' => ['required', 'string', 'min:8', 'confirmed','regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/'],
+            'position' =>['required','string','min:3'],
+            'department'=>['required','string','min:3'],
             'phone' =>['required','regex:/^07[0-9]{8}/','unique:users'], 
         );
         $validator = Validator::make($request->all(),$rules,$passRegexMessage);
@@ -133,7 +153,7 @@ class userController extends Controller
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'position' =>$request->input('position'),
-                'directorate' => $request->input('directorate'),
+                'department' => $request->input('department'),
                 'phone' => $request->input('phone'),
                 'status' =>$request->input('status'),
                 'created_at'=>now(),
@@ -143,7 +163,10 @@ class userController extends Controller
                 ]);
 
                     $id = DB::getPdo()->lastInsertId();
-                     return 'successfully done '. $id ;
+                    if(App::getLocale()=="fa"){
+                        return "استفاده کننده جدید با آی دی $id موفقانه به سیستم علاوه گردید.";
+                    }
+                     return 'Successfully new user with '. $id . 'saved to system' ;
             }
             catch(QueryException $e){
                 return $e.getMessage();
@@ -194,10 +217,21 @@ class userController extends Controller
             $user->approver_user_id =Auth::user()->id;
             $user->save();
                 if($user->status == 'true'){
-                    return "successfully Approved";}
+                    if(App::getLocale()=='fa'){
+                        return "موفقانه در سیستم علاوه گردید.";
+                    }
+                    return "successfully Approved";
+
+                }
                 if($user->status == 'false'){
+                    if(App::getLocale()=='fa'){
+                        return "موفقانه رد گردید";
+                    }
                     return "successfully Rejected";}
                 if($user->status == ''){
+                    if(App::getLocale()=='fa'){
+                        return "هنوز هم به حالت معلق باقی ماند.";
+                    }
                     return "pending not abrogated";}
            }catch(QueryException $e){
             return $e->getMessage();
@@ -210,9 +244,14 @@ class userController extends Controller
          
     }
     function changePassword(Request $request, $id){
+        if(App::getLocale()=='fa'){
+            $passRegexMessage = [
+                'new_password.regex' => 'مقدار پسورد از 8 رقم کمتر نباشد، حد اقل یک سمبول ، یک شماره و یک حرف ضروری می باشد.'
+            ];
+        }else{
         $passRegexMessage = [
             'new_password.regex'=>' Password must has 8 letters, at least one letter, one number and one special charecter ',
-            ];
+            ];}
 
         $rules = array(
             'previous_password' =>['required'],
@@ -235,14 +274,20 @@ class userController extends Controller
                             DB::table('users')->update([
                                 'password'=>Hash::make($npass)
                             ]);
+                            if(App::getLocale()=='fa'){
+                                return "پسورد شما موفقانه تغیر یافت.";
+                            }
                             return "Your passsword has changed successfully";
                         }catch(QueryException $e){
                         return $e.getMessage();
                         }
                     }
                     }else{
-                        echo "The password confirmation does not match.";
-                        return $npass . " ".$cnpass;
+                        if(App::getLocale()=='fa'){
+                            return "پسورد ها با هم مچ نمی کنند.";
+                        }
+                        return "The password confirmation does not match.";
+                        
                     }
                 }else{
                     return "wrong password";
@@ -261,14 +306,14 @@ class userController extends Controller
         $phone = $user->phone = $request->input('phone');
         $pass =$user->password = Hash::make($request->input('password'));
         $position = $user->position = $request->input('position');
-        $directorate = $user->directorate =$request->input('directorate');
+        $department = $user->department =$request->input('department');
         $status = $status = $request->input('status');
         $rules = array(
-        'position' =>['required','string','min:4'],
-        'directorate'=>['required','string','min:4'],
+        'position' =>['required','string','min:3'],
+        'department'=>['required','string','min:3'],
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:255'],
-        // 'password' => ['required', 'string', 'min:6', 'confirmed'],
+        // 'password' => ['required', 'string', 'min:8', 'confirmed'],
         'phone' =>['required','regex:/^07[0-9]{8}/'], 
         );
         if(strpos($requestUrl,'/home')){
@@ -279,18 +324,29 @@ class userController extends Controller
             
             if(!($data['email']==$email)){
                 $countEmail = DB::table('users')->where('email',$email)->count();
-                if($countEmail>0){ return "Duplicate Email"; }
+                if($countEmail>0){ 
+                    if(App::getLocale()=='fa'){
+                        return "این ایمیل در سیستم موجود است.";
+                    }
+                    return "Duplicate Email"; }
             }
          
             if(!($data['phone']==$phone)){
                 $countPhone = DB::table('users')->where('phone',$phone)->count();
-                if($countPhone>0){ return "Duplicate phone number"; }
+                if($countPhone>0){
+                    if(App::getLocale()=='fa'){
+                        return "این شماره تلفون در سیستم موجود است.";
+                    }
+                    return "Duplicate phone number"; }
             }
           
                 try{
                      DB::table('users')
                     ->where('id', $id)
-                    ->update(['name' => $name,'email'=>$email,'phone'=>$phone,'position'=>$position,'directorate'=>$directorate]);
+                    ->update(['name' => $name,'email'=>$email,'phone'=>$phone,'position'=>$position,'department'=>$department]);
+                    if(App::getLocale()=='fa'){
+                        return "موفقانه تجدید گردید.";
+                    }
                     return "successfully Updated";
                 }
                     catch(QueryException $e){$e.getMessage();}  
@@ -306,6 +362,9 @@ class userController extends Controller
                  if($user->status == 'true'){
                      return "successfully Approved";}
                  if($user->status == 'false'){
+                    if(App::getLocale()=='fa'){
+                        return "موفقانه رد گردید.";
+                    }
                      return "successfully Rejected";}
             
             }catch(QueryException $e){
@@ -315,16 +374,6 @@ class userController extends Controller
              return "don't change on select options";
          } 
     }
-        
-        //
-        
-    //     $passRegexMessage = ['password.regex'=>' Password must has 8 letters, at least one letter, one number and one special charecter ',
-    // 'phone.regex'=>'phone number must start with 07 and not be greater than 10 numbers'];
-   
-        
-
-        // else{     
-    //    }
     }
 
     /**

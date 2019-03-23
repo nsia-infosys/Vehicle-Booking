@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App;
 use Illuminate\Http\Request;
 use Validator;
 use Response;
@@ -21,43 +21,53 @@ class driverController extends Controller
      */
 // protected $redirectTo = '/drivers';
     public function __construct(){
-        return $this->middleware('auth');
+        $this->middleware('auth');
+        $this->middleware(['permission:Read_driver_car|Update_driver_car|Create_driver_car']);
     }
     public function index()
     {
         $driversData = DB::table('drivers')->orderBy('driver_id','des')->paginate(5);
         $dataCounts =  DB::table('drivers')->count();
+        
         return view('/drivers/index')->with(compact('driversData','dataCounts'));
     }
     public function searchDriver(Request $request){
+        if(App::getLocale()=='fa'){
+            $update = 'تجدید';
+            $notFound = 'به این مشخصات معلوماتی وجود ندارد';
+        }else{
+            $update = 'Update';
+            $notFound = 'Data not found!';
+        }
         
       $searchOn = $request->input('searchon');
       $searchInput= $request->input('searchInp');
 
         if($searchOn == "id"){
-        $dataArray = DB::table('drivers')->where("driver_id",'LIKE',"%$searchInput%")->paginate(5);
+        $dataArray = DB::table('drivers')->where("driver_id",'LIKE',"%$searchInput%")->get();
         $dataCount = DB::table('drivers')->where("driver_id",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "name"){
-        $dataArray = DB::table('drivers')->where("name",'LIKE',"%$searchInput%")->paginate(5);
+        $dataArray = DB::table('drivers')->where("name",'LIKE',"%$searchInput%")->get();
         $dataCount = DB::table('drivers')->where("name",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "father_name"){
-        $dataArray = DB::table('drivers')->where("father_name",'LIKE',"%$searchInput%")->paginate(5);
+        $dataArray = DB::table('drivers')->where("father_name",'LIKE',"%$searchInput%")->get();
         $dataCount = DB::table('drivers')->where("father_name",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "phone_no"){
-        $dataArray = DB::table('drivers')->where("phone_no",'LIKE',"%$searchInput%")->paginate(5);
+        $dataArray = DB::table('drivers')->where("phone_no",'LIKE',"%$searchInput%")->get();
         $dataCount = DB::table('drivers')->where("phone_no",'LIKE',"%$searchInput%")->count();}
 
         if($searchOn == "status"){
             if($searchInput == 'a'){$searchInput = str_replace('a', false, false);}
-        $dataArray = DB::table('drivers')->where("status",'LIKE',"%$searchInput%")->paginate(5);
+        $dataArray = DB::table('drivers')->where("status",'LIKE',"%$searchInput%")->get();
         $dataCount = DB::table('drivers')->where("status",'LIKE',"%$searchInput%")->count();}
         if($dataCount >0 ){
             
         foreach ($dataArray as $data) {
             if($data->status === false){$data->status = 'false';}else{$data->status='true';}
+            if(App::getLocale()=='fa'){$update = "تجدید";}else{$update = 'Update';}
             echo "<tr><td><b>". $data->driver_id . "</b></td>" .
                  "<td>" . $data->name . "</td>".
                  "<td>" . $data->father_name . "</td>".
@@ -65,10 +75,10 @@ class driverController extends Controller
                  "<td>" . $data->status . "</td>" .
                  "<td>" . $data->created_at . "</td>" .
                  "<td class='Af'>" . $data->updated_at . "</td>" .
-                 "<td><a href='/drivers/$data->driver_id' id='$data->driver_id' class='btn btn-primary updateBtn'>Update</a></td>      
-                 <td><a href='drivers/$data->driver_id' id='$data->driver_id' class='deleteBtn btn btn-danger'>Delete </button></td>
+                 "<td><a href='/drivers/$data->driver_id' id='$data->driver_id' class='btn btn-primary btn-sm updateBtn'>$update</a></td>      
+                 
                  </tr>";
-             }}else{return "<tr><td colspan='8'><div class='card bg-light text-dark'><div class='card-body text-center' id='notFound'><h1>Data not found!</h1></div></div></td></tr>";}
+             }}else{return "<tr><td colspan='8'><div class='card bg-light text-dark'><div class='card-body text-center' id='notFound'><h1>$notFound</h1></div></div></td></tr>";}
       
       }
      
@@ -174,6 +184,9 @@ class driverController extends Controller
              if(!($data['phone_no']==$phone_no)){
                 $phCount = DB::table('drivers')->where('phone_no',$phone_no)->count();
                 if($phCount>0){
+                    if(App::getLocale()=='fa'){
+                        return "این شماره مربوط راننده دیگر می باشد.";
+                    }
                     return "the phone no has already been taken";
                 }
             }

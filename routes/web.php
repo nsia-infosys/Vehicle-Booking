@@ -23,7 +23,7 @@ Route::post('/users/searchUser/{data}','userController@searchUser');
 Route::get('/pendings_users','userController@pendings');
 Route::put('/approveUser/{id}','userController@approveUser');
 Route::put('/changePassword/{id}','userController@changePassword');
-Route::resource('/users', 'userController');
+Route::resource('/users', 'userController')->middleware(['permission:Read_user|Create_user']);
 Route::post('/cars/searchCar/{data}','carController@searchCar')->name('cars.searchCar');
 Route::resource('/cars', 'carController');
 
@@ -42,9 +42,17 @@ Route::get('/user_roles','rolesController@user_roles');
 Route::get('/roles/{id}/edit2','rolesController@edit2');
 Route::resource('/roles', 'rolesController');
 
-// Route::post('/book vehical','bookVehicalController@sendData')->name('book_vehical.sendData');
-// Route::get('/book a vehical','bookVehicalController@index')->name('book_vehical.sendData');
 
 Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'LanguageController@switchLang']);
+// Route::get('/', function () {
+//     if(Auth::check()) {
+//         return redirect('/home');
+//     } else {
+//         return view('auth.login');
+//     }
+// });
+// Route::get('/{lang}', function($lang){
+//      session('lang',App::setLocale($lang));
+//      return Session::get('locale');
+// });

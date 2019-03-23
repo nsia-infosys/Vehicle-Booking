@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\car;
+use App;
 use DB;
 use Validator;
 use Illuminate\Database\QueryException;
@@ -17,20 +18,28 @@ class carController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function __construct(){
-        return $this->middleware('auth');
+        $this->middleware('auth');
+        $this->middleware(['permission:Read_driver_car|Update_driver_car|Create_driver_car']);
     }
     public function index()
     {
+        
         //
         $drivers = DB::select(DB::raw("SELECT drivers.driver_id,drivers.name FROM drivers left JOIN cars on cars.driver_id = drivers.driver_id where cars.driver_id IS NULL"));
 
-        $carsData = DB::table('cars')->orderBy('plate_no','des')->get();
+        $carsData = DB::table('cars')->orderBy('plate_no','des')->paginate(5);
         $dataCounts =  DB::table('cars')->count();
         return view('/cars/index')->with(compact('carsData','dataCounts','drivers'));
     }
 
     public function searchCar(Request $request){
-        
+        if(App::getLocale()=='fa'){
+            $update = 'تجدید';
+            $notFound = 'به این مشخصات معلوماتی وجود ندارد';
+        }else{
+            $update = 'Update';
+            $notFound = 'Data not found!';
+        }
       $searchOn = $request->input('searchon');
       $searchInput= $request->input('searchInp');
         
@@ -61,6 +70,7 @@ class carController extends Controller
             
         foreach ($dataArray as $data) {
             if($data->status === false){$data->status = 'False';}else{$data->status='True';}
+            
             echo 
                  "<td>" . $data->plate_no . "</td>".
                  "<td>" . $data->color . "</td>".
@@ -70,12 +80,13 @@ class carController extends Controller
                  "<td>" . $data->driver_id . "</td>" .
                  "<td>" . $data->created_at . "</td>" .
                  "<td class='Af'>" . $data->updated_at . "</td>" .
-                 "<td><a href='/cars/$data->plate_no' id='$data->plate_no' class='btn btn-primary updateBtn'>Update</a></td>      
-                 <td><a href='cars/$data->plate_no' id='$data->plate_no' class='deleteBtn btn btn-danger'>Delete </button></td>
+                 "<td><a href='/cars/$data->plate_no' id='$data->plate_no' class='btn btn-sm btn-primary updateBtn'>" .
+                 $update
+                 ."</a></td>    
                  </tr>";
-             }}
-
-             else{return "<tr><td colspan='8'><div class='card bg-light text-dark'><div class='card-body text-center' id='notFound'><h1>Data not found!</h1></div></div></td></tr>";}
+             }
+            }else{
+                return "<tr><td colspan='8'><div class='card bg-light text-dark'><div class='card-body text-center' id='notFound'><h1>$notFound</h1></div></div></td></tr>";}
       
       }
  
@@ -125,15 +136,10 @@ class carController extends Controller
             else{
             try{
                 Car::create($request->all());
-                // DB::statement(DB::raw("insert into cars values($plate_no,'$color','$model','$type',$status,now(),now(),$driver_id)"));
-            //||||----- Car::create($request->all()) appear this error-->>
-            //note PHP can not check null value it can check '' values only and only.
-            //  NOTE SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for integer: "NULL" 
-            // (SQL: insert into "cars" ("plate_no", "color", "model", "type", "status", "driver_id", "updated_at", "created_at") 
-            // values (99999, red, 2009, corolla, true, NULL, 2019-02-21 17:46:52, 2019-02-21 17:46:52) returning "plate_no")----\\||||
-                //
-                        
-                return "successfully done " . $plate_no;
+                if(App::getLocale()=='fa'){
+                    return "موفقانه موتر جدید با پلیت نمبر $plate_no علاوه گردید.";
+                }        
+                return "successfully new car with plate number of " . $plate_no . 'added to system';
             }
          catch(QueryException $ex){ 
               print($ex->getMessage()); 
@@ -153,15 +159,18 @@ class carController extends Controller
      */
     public function show($plate_no)
     {
+          
+            if(App::getLocale()=='fa'){$update = 'تجدید';}else{$update = 'Update';}
+        
         //
       $data = DB::table('cars')->where('plate_no',$plate_no)->first();
       if($data->status == 1){$data->status = "True";}else{$data->status="False";}
+      if($data->driver_id == null){$data->driver_id = "NULL";}
     
     $row = "<tr><td><b>".$data->plate_no."</b></td><td>" . $data->color ."</td><td>"
                 .$data->model."</td><td>".$data->type."</td><td>".$data->status."</td><td>".$data->driver_id."</td><td>".$data->created_at."</td><td>".$data->updated_at.
                 "</td><td><a href='/cars/"
-                .$data->plate_no ."' id='".$data->plate_no."'class='btn btn-primary updateBtn' >Update</a></td><td><a a href='/cars/"
-                .$data->plate_no ."' id='".$data->plate_no. "'class='btn btn-danger deleteBtn'>Delete </button></td></td></tr>";
+                .$data->plate_no ."' id='".$data->plate_no."'class='btn btn-primary btn-sm updateBtn' >$update</a></td>";
      // return json_encode($data);
      return $row;
     }
@@ -213,7 +222,13 @@ class carController extends Controller
             $d_id_driver = DB::table('drivers')->where('driver_id',$driver_id)->count();
             $arrayOfErr = array();
             if(!($data['plate_no'] == $plate_no)){$plate_count = DB::table('cars')->where('plate_no',$plate_no)->count();
-                if($plate_count > 0){$arrayOfErr[0] = "plate number(".$plate_no.") has already been taken";}}
+                if($plate_count > 0){
+                    if(App::getLocale()=='fa'){
+                        $arrayOfErr[0] = "پلیت نمبر $plate_no در سیستم نیز موجود است.";
+                    }else{
+                    $arrayOfErr[0] = "plate number(".$plate_no.") has already been taken";}
+                    }
+                }
        
           
                 
@@ -229,7 +244,13 @@ class carController extends Controller
                              
                       
             if($d_id_driver<=0 && $driver_id)
-                {$arrayOfErr[2] = "there is no driver registered with ID of " . $driver_id . " ";}
+                {
+                    if(App::getLocale()=='if'){
+                    $arrayOfErr[2] = "راننده با این $driver_id در سیستم ثبت نیست.";
+                    }else{
+                    $arrayOfErr[2] = "there is no driver registered with ID of " . $driver_id . " ";
+                        }
+                }
             
             if($arrayOfErr){
                 return $arrayOfErr;
@@ -238,7 +259,11 @@ class carController extends Controller
             try { 
                 $update = DB::table('cars')->where('plate_no',$plate_no_for_update)
                 ->update(['plate_no'=>$plate_no,'color'=>$color,'model'=>$model,'type'=>$type,'status'=>$status,'driver_id'=>$driver_id]);
-               return "successfully updated";
+               
+                    if(App::getLocale()=='fa'){
+                        return  'موفقانه تجدید گردید';
+                    }
+                return "successfully updated";
                 }
              catch(QueryException $ex){ 
               

@@ -1,25 +1,9 @@
 @extends("layouts.app")
 @section('content')  
+@if(Auth::user()->can('Read_users_role'))
+  <h3>{{ __('msg.Users role') }} </h3>
 
-  <h3>Users Role </h3>
-<div class="row">
-        <div class="col-md-12 form-inline">
-         <div class="clear-fix"></div>
-              <form id='searchForm' class="form-inline" style="margin-bottom: 3px;">
-                @csrf
-                  <input type="text" id="searchInp" name="searchInp" class="form-control form-inline" placeholder="Search...">&nbsp
-                  <select id="searchon" name="searchon" class="form-control" method='post'>
-                      <option>{{__('Search By')}}</option>
-                      <option value="id">{{ __('User ID')}}</option>
-                      <option value="name">{{__('Name')}}</option>
-                      <option value="role">{{__('Role')}}</option>
-                  </select>&nbsp
-                  <button id='searchBtn' type="submit" class="btn btn-info form-control">Search</button><div class='clear-fix'></div>
-                  {{ csrf_field() }}
-              </form>   
-        </div>      
-</div>
-
+@if(Auth::user()->can('Update_role'))
 <!-- upadate modal box -->
 <div id='updateModal' class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered ">
@@ -28,12 +12,12 @@
               <div class="row">
                   <div class="col-md-12">
                   <div class="card text-white bg-secondary ">
-                  <div class="card-header">UPDATE</div>
+                  <div class="card-header">{{ __('msg.Update') }}</div>
                     <div class="card-body">
                       <div class="row">
                         <div class="col-md-12 col-sm-12 col-xs-12 form-group font-weight-light" id='user_role'>
-                        <span style="display:inline-block; margin:10px">  {{ __('User ID: ') }}</b><span id='id'></span></span>
-                        <span style="display:inline-block;margin:10px">   {{ __('User Name: ') }}</b><span id='name'></span></span>
+                        <span style="display:inline-block; margin:10px">  {{ __('msg.User Id: ') }}</b><span id='id'></span></span>
+                        <span style="display:inline-block;margin:10px">   {{ __('msg.User name: ') }}</b><span id='name'></span></span>
                         </div>
                         <div class="col-md-12 col-sm-12 col-xs-12">
                     <form id='updateForm' method="PUT">
@@ -47,9 +31,9 @@
                       </div>
                     
                       <div class="form-group clear-fix">
-                        <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>Save</button>
+                        <button type='submit' class='btn float-right btn-primary' name="saveUpdate" id='saveUpdate'>{{ __('msg.Save') }}</button>
                         <span class="float-right">&nbsp</span>
-                        <button class='btn btn-dark float-right' name="cancelUpdate" id='cancelUpdate' data-dismiss="modal">Cancel</button>
+                        <button class='btn btn-dark float-right' name="cancelUpdate" id='cancelUpdate' data-dismiss="modal">{{ __('msg.Cancel') }}</button>
                       </div>
                       
                     </form>
@@ -63,16 +47,20 @@
     </div>
   </div>
 </div>
+@endif
 <!--  -->
 
 <div id='driverTable'>
 	<table id='dataTable' class="table table-bordered table-light" >
   <thead>
     <tr>
-      <th scope="col">{{ __('ID') }}</th>
-      <th scope="col">{{__('Name')}}</th>
-      <th scope="col">{{__('Roles')}}</th>
-      <th scope="col" colspan="2" class='text-center'>Action</th>
+      <th scope="col">{{ __('msg.ID') }}</th>
+      <th scope="col">{{__('msg.Name')}}</th>
+      <th scope="col">{{__('msg.Roles')}}</th>
+      
+  @if(Auth::user()->can('Update_role'))
+      <th scope="col" colspan="2" class='text-center'>{{ __('msg.Action') }}</th>
+  @endif
     </tr>
   </thead>
   <tbody class='tbodyOfDriver tableOfDriver'>
@@ -94,8 +82,9 @@
         <span style="color:white;background-color:firebrick;display:inline-block;padding:2px;border-radius:4px;margin:1px">  {{  $role->name}} </span>
         @endforeach
       </td>
-      
-  		<td class='text-center'><a href="/roles/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-sm btn-primary updateBtn">{{ __('Add/Change role') }}</a></td>
+  @if(Auth::user()->can('Update_role'))
+  		<td class='text-center'><a href="/roles/{{ $rowData->id }}" id="{{$rowData->id}}" class="btn btn-sm btn-primary updateBtn">{{ __('msg.Give/Change role') }}</a></td>
+  @endif  
     </tr>
     @endforeach
   </tbody>
@@ -103,6 +92,7 @@
 {{ $users->links() }}
 </div>
 </div>
+@endif
 <!-- script part of page -->
 	<script type="text/javascript">
 //end of jqery                            

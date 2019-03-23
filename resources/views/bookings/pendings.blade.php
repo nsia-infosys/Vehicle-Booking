@@ -4,6 +4,7 @@
 @section('content')
 
 <!--  -->
+@if(Auth::user()->can('Approve_booking'))
 {{-- PENDING BOOKINGS --}}
 <div id='updateModal' class="modal fade insert-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered ">
@@ -12,7 +13,7 @@
         <div class="row">
           <div class="col-md-12">
             <div class="card text-white bg-secondary ">
-            <div class="card-header">Approve or Reject Booking</div>
+            <div class="card-header">{{ __('msg.Booking approval') }}</div>
               <div class="card-body">
                
                   <form id='updateForm'>  
@@ -22,17 +23,17 @@
                       {{--  <input type="hidden" value={{ Auth::user()->id }} name='user_id'>  --}}
                       <div class="row" >
                           <div class=" options-approve form-group col-md-4">
-                            <label for="approval"><b>{{ __('approval') }}</b> </label>&nbsp;
+                            <label for="approval"><b>{{ __('msg.Approval') }}</b> </label>&nbsp;
                             <select class='form-control form-control-sm' name='approval' id="approval">
-                                <option value="true">{{ __('TRUE') }}</option>
-                                <option value="false">{{ __('FALSE') }}</option>
+                                <option value="true">{{ __('msg.TRUE') }}</option>
+                                <option value="false">{{ __('msg.FALSE') }}</option>
                                
                               </select>
                           </div>
                           <div class="form-group col-md-4">
-                            <label  for="car"><b>{{ __('car') }} </b></label>&nbsp;
+                            <label  for="car"><b>{{ __('msg.Car') }} </b></label>&nbsp;
                             <select name="plate_no" class="form-control form-control-sm" id="plate_no">
-                              <option value="">SELECT A CAR</option>
+                              <option value="">{{ __('msg.Select a car') }}</option>
                               
                               @foreach ($freeCars as $item)
                               <option value="{{ $item->plate_no }}">{{ $item->type . "_" . $item->driver_id }}</option>
@@ -40,9 +41,9 @@
                             </select>
                           </div>
                           <div class="form-group col-md-4">
-                            <label for="driver"><b>{{ __('driver') }} </b></label>&nbsp;
+                            <label for="driver"><b>{{ __('msg.Driver') }} </b></label>&nbsp;
                             <select class='form-control form-control-sm' name='driver_id' id="driver_id">
-                                <option value="">SELECT A DRIVER</option>
+                                <option value="">{{ __('msg.Select a driver') }}</option>
                                 
                                 @foreach ($freeDrivers as $item)
                                  <option value="{{ $item->driver_id }}">{{ $item->driver_id . "_" . $item->name ."_". $item->phone_no }}</option>
@@ -50,17 +51,17 @@
                               </select>
                             </div>
                           <div class="form-group col-md-12 col-sm-12 col-lg-6">
-                            <label for='approval_pickup_time'><b>{{ __('approval pickup time') }}</b></label>&nbsp;
+                            <label for='approval_pickup_time'><b>{{ __('msg.Approval_pickup_time') }}</b></label>&nbsp;
                             <input class='form-control' type='text' name="approval_pickup_time" id='approval_pickup_time' value="" placeholder="yyyy-mm-dd hh:mm">
                           </div>
                           <div class="form-group col-md-12 col-sm-12 col-lg-6">
-                            <label for='approval_return_time'><b>{{ __('approval return time') }}</b></label>&nbsp;
+                            <label for='approval_return_time'><b>{{ __('msg.Approval_return_time') }}</b></label>&nbsp;
                             <input class='form-control' type='text' name="approval_return_time" id='approval_return_time' value="" placeholder="yyyy-mm-dd hh:mm">
                           </div>
                       
                           <div class="form-group col-md-12">
-                            <label for='approver_description'><b>{{ __('approver description') }}</b></label>&nbsp;
-                            <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder=" are you agree or not agree, why?"></textarea>
+                            <label for='approver_description'><b>{{ __('msg.Approver_description') }}</b></label>&nbsp;
+                            <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder="{{ __('msg.Please write cause of approval  or rejection') }}"></textarea>
                             <div class="help-error"></div>
                           </div>
                           <div class="col-md-12 clear-fix float-right">
@@ -79,30 +80,34 @@
       </div>
     </div>
 </div>
-  
+  @endif
   {{--  for approve details  --}}
 
   
 
   {{-- end of approve details  --}}
  
+@if(Auth::user()->can('Approve_booking')||Auth::user()->can('Read_booking'))
   @if(!($countPendings))
   
-  <h4>{{ __("There are no pending data wait for approving") }}</h4>
+  <h4>{{ __("msg.There are no pending booking wait for approving") }}</h4>
   @elseif($countPendings>0)
-  <h4>{{ __("There are " . $countPendings . " pending data wait for approving") }}</h4>
+  <h4>{{ __("msg.Pending bookings number: "). $countPendings }}</h4>
   
    <div class="col-md-12 bg-white">
    <table class="table-approve table table-bordered">
       <tr>
-      <th>{{ __('Booking ID') }}</th>
-      <th>{{ __('User') }}</th>
-      <th>{{ __('Count of persons') }}</th>
-      <th>{{ __('Destination') }}</th>
-      <th>{{ __('pickup time') }}</th>
-      <th>{{ __('return time') }}</th>
-      <th>{{ __('Description') }}</th>
-      <th colspan="2" class="text-center">{{ __('Action') }}</th>
+      <th>{{ __('msg.Booking_Id') }}</th>
+      <th>{{ __('msg.User') }}</th>
+      <th>{{ __('msg.Count') }}</th>
+      <th>{{ __('msg.Destination') }}</th>
+      <th>{{ __('msg.Pickup_time') }}</th>
+      <th>{{ __('msg.Return_time') }}</th>
+      <th>{{ __('msg.Description') }}</th>
+      
+    @if(Auth::user()->can('Approve_booking'))
+      <th colspan="2" class="text-center">{{ __('msg.Action') }}</th>
+    @endif
     </tr>
     @foreach ($pendings as $data)  
     
@@ -117,8 +122,9 @@
             <td>{{ $data->pickup_time }}</td>
             <td>{{ $data->return_time }}</td>
             <td>{{ $data->description }}</td>
-            <td><a href="/bookings/{{ $data->booking_id }}" id="{{ $data->booking_id }} "class="btn btn-primary btn-sm updateBtn" data-toggle="modal" data-target="#updateModal">approve or reject</button></td>
-            
+          @if(Auth::user()->can('Approve_booking'))
+            <td><a href="/bookings/{{ $data->booking_id }}" id="{{ $data->booking_id }} "class="btn btn-primary btn-sm updateBtn" data-toggle="modal" data-target="#updateModal">{{ __('msg.Approve or reject') }}</button></td>
+          @endif
         </tr>
       @endforeach
       
@@ -126,6 +132,7 @@
     </div>
     
   {{ $pendings->links() }}  
+  @endif
   @endif
 </div>
 
