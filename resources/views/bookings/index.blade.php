@@ -26,10 +26,10 @@
                       <div class="form-group col-md-4">
                         <label  for="car"><b>{{ __('msg.Car') }} </b></label>&nbsp;
                         <select class='form-control form-control-sm plate_no' name='plate_no' id="plate_no">
-                            <option value="">SELECT A CAR</option>
+                            <option value="">{{ __('msg.Select a car')}}</option>
                             @foreach ($freeCars as $item)
                              <option value="{{ $item->plate_no }}">
-                               {{ $item->plate_no . " _ " . $item->type ." _ " .$item->driver_id }}
+                               {{ "(".$item->plate_no . ") " . $item->type }}
                               </option>
                             @endforeach
   
@@ -38,10 +38,10 @@
                       <div class="form-group col-md-4">
                         <label for="driver"><b>{{ __('msg.Driver') }} </b></label>&nbsp;
                         <select class='form-control form-control-sm driver_id' name='driver_id' id="driver_id">
-                            <option value="">SELECT A DRIVER</option>
+                            <option value="">{{ __('msg.Select a driver') }}</option>
                             
                             @foreach ($freeDrivers as $item)
-                             <option value="{{ $item->driver_id }}">{{ $item->driver_id . "_" . $item->name ."_". $item->phone_no }}</option>
+                             <option value="{{ $item->driver_id }}">{{ $item->name ."  ". $item->phone_no }}</option>
                             @endforeach
                           </select>
                         </div>
@@ -56,13 +56,13 @@
                   
                       <div class="form-group col-md-12">
                         <label for='approver_description'><b>{{ __('msg.Approver_description') }}</b></label>&nbsp;
-                        <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder=" are you agree or not agree, why?"></textarea>
+                        <textarea class='form-control' type='text' name="approver_description" id='approver_description' placeholder=" {{ __('msg.Cause of agreement') }}"></textarea>
                         <div class="help-error"></div>
                       </div>
                       <div class="col-md-12">
-                 <input type="submit" value="APPROVE" class="btn float-right btn-primary">
+                 <input type="submit" value="{{ __('msg.Approve') }}" class="btn float-right btn-primary">
                  <span class="float-right">&nbsp;</span>
-                   <input type="button" value="REJECT" name='reject' class="btn float-right btn-danger">
+                   <input type="button" value="{{ __('msg.Reject') }}" name='reject' class="btn float-right btn-danger">
                       </div>
                       
                     </div>
@@ -116,7 +116,7 @@
           <td>{{$rowData->pickup_time}}</td>
           <td>{{$rowData->return_time}}</td>
           <td>{{$rowData->count}}</td>
-          <td>{{$rowData->description}}</td>
+          <td><div style="min-width:300px">{{$rowData->description}}</div></td>
           <td>
             @if($rowData->approval === true)
               <span style="background-color:dodgerblue;border-radius:3px;padding:4px;display:inline-block">  {{  __('msg.Approved')}}</span>
@@ -124,7 +124,7 @@
                 <span style="color:white;background-color:firebrick;border-radius:3px;padding:4px;display:inline-block">  {{  __('msg.Rejected')}}</span>
             @endif  
           </td>
-          <td>{{$rowData->approver_description}}</td>
+          <td><div style="min-width:300px">{{$rowData->approver_description}}</div></td>
           <td>{{$rowData->approval_pickup_time}}</td>
           <td>{{$rowData->approval_return_time}}</td>
           <td>{{$rowData->approver_user_id}}</td>

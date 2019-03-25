@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 
 class userController extends Controller
 {
+
     public function __construct(){
 
         $this->middleware('auth');
@@ -52,8 +53,8 @@ class userController extends Controller
           $dataCount = DB::table('users')->where("position",'LIKE',"%$searchInput%")->count();}
   
           if($searchOn == "department"){
-          $dataArray = DB::table('users')->where("department",'LIKE',"%$searchInput%")->get();
-          $dataCount = DB::table('users')->where("department",'LIKE',"%$searchInput%")->count();}
+          $dataArray = DB::table('users')->where("department",'ILIKE',"%$searchInput%")->get();
+          $dataCount = DB::table('users')->where("department",'ILIKE',"%$searchInput%")->count();}
   
           if($searchOn == "status"){
               if($searchInput == 'a'){$searchInput = str_replace('a', false, false);}
@@ -326,7 +327,7 @@ return "<tr><td colspan='11'><div class='card bg-light text-dark'><div class='ca
                 $countEmail = DB::table('users')->where('email',$email)->count();
                 if($countEmail>0){ 
                     if(App::getLocale()=='fa'){
-                        return "این ایمیل در سیستم موجود است.";
+                        return "ایمیل تکراری است";
                     }
                     return "Duplicate Email"; }
             }
@@ -335,7 +336,7 @@ return "<tr><td colspan='11'><div class='card bg-light text-dark'><div class='ca
                 $countPhone = DB::table('users')->where('phone',$phone)->count();
                 if($countPhone>0){
                     if(App::getLocale()=='fa'){
-                        return "این شماره تلفون در سیستم موجود است.";
+                        return "شماره تلفون تکراری است";
                     }
                     return "Duplicate phone number"; }
             }

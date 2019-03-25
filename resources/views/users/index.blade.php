@@ -1,7 +1,7 @@
+{{--  @php $title = basename($_SERVER['PHP_SELF']);@endphp  --}}
 @extends("layouts.app")
 @section('content')
 
-<!--  -->
 <!--  -->
     <div class="row">
           <div class="col-md-8 form-inline">
@@ -68,10 +68,10 @@
                                     <label for="dpeartment" >{{ __('msg.Department') }}</label>
                                     <select class='form-control' name="department" id="department">
                                       <option value="">{{ __('msg.Select a department') }}</option>
-                                      <option value="Deputy Directorate of System development">{{ __('msg.Deputy Directorate of System development') }}</option>
-                                      <option value="GIS">{{ __('msg.GIS') }}</option>
-                                      <option value="Administration">{{ __('msg.Administration') }}</option>
-                                      <option value="Maslaki">{{ __('msg.Maslaki') }}</option>
+                                      <option value="معاونیت انکشاف سیستم های معلوماتیی">{{ __('msg.Deputy Directorate of System development') }}</option>
+                                      <option value=" معاونیت جغرافیایی">{{ __('msg.GIS') }}</option>
+                                      <option value=" معاونیت اداری و مالی ">{{ __('msg.Administration') }}</option>
+                                      <option value="معاونیت مسلکی">{{ __('msg.Maslaki') }}</option>
                                     </select>
                                     <div class='errorsOfUsers font-italic text-light' >
                                         <div class="help-block " id='depErr'> </div>

@@ -9,6 +9,7 @@ jQuery(document).ready(function(){
     time_message = 'تاریخ باید با چارچوب 2019/01/01 00:00:00 تطابق داشته باشد.';
     plate_message = " شماره پلیت باید میان 100 الی 99999 باشد. ";
     pass_message = ' مقدار پسورد از 8 رقم کمتر نباشد، حد اقل یک سمبول ، یک شماره و یک حرف ضروری می باشد. ';
+    character10 = 'حد اقل باید 10 حرف برای علت رد نیاز است.'
   }
   else{
     alphabet_regex_message = 'Only using of alphabets, spaces, and - _ is allowed';
@@ -16,19 +17,20 @@ jQuery(document).ready(function(){
     time_message = 'Date format should be like 2019/01/01 01:00';
     plate_message ="Plate number should not has more than 5 and less than3 digits.";
     pass_message = "Minimum eight characters, at least one letter, one number and one special character";
+    character10 = 'at least 10 characters for case of rejection is required';
 
   }
   $(".close-alert").click(function(){
-    $("#errDiv,#sucDiv").fadeOut();
+    $("#errDiv,#sucDiv").fadeOut(100);
   });
   $("#sucDiv,#errDiv").mouseover(function(){
         if($(this).is(':animated')) {
            $(this).stop().animate({opacity:'100'});
         }
       });
-      $('#sucDiv, #errDiv').mouseleave(function() {
-        this.timeout = setTimeout("$('#sucDiv,#errDiv').fadeOut(1500)", 1500);
-      });
+  //     $('#sucDiv, #errDiv').mouseleave(function() {
+  //       this.timeout = setTimeout("$('#sucDiv,#errDiv').fadeOut(1500)", 1500);
+  //     });
 
 //errasing errors if buttons clicked
 $("#cancel, #cancelUpdate,#insertButton,.updateBtn").click(function(){
@@ -243,6 +245,7 @@ else if(locPath == '/users'){
 }
 else if(locPath == '/home'){  
   validatePasswordChange();
+  updateData('/users')
   $(".passBtn").click(function(e){
     e.preventDefault();
     var id = $(this).attr('id');
@@ -392,6 +395,9 @@ else if(locPath =='/pending_bookings' || locPath =='/bookings'){
       }
     });
  }
+ else if(locPath =='/home'){
+   
+ }
 
 
 $("#searchForm").submit(function (e){
@@ -411,9 +417,15 @@ function updateData(url,inpName1,inpName2,inpName3,inpName4,inpName5,inpName6,in
     data: dataForUpdate,
     success: function(data){
       console.log(data);
+      
+      if(loc.indexOf('/home'>=0)&& data.indexOf('Duplicate')>=0||data.indexOf('تکراری')>=0){
+        $("#errDiv span:first-child").text(data);
+        $("#errDiv").fadeIn();
+        
+      }
       if(typeof data === 'object'){
         if(loc.indexOf('/home')>=0){
-          
+
         if(!(typeof data[inpName4]=="undefined")){
           $("#updateForm .help-block:eq(2)").html('* '+data[inpName4]);}
         }
@@ -537,7 +549,7 @@ function searchData(method,url){
     success: function(data){
       console.log(data);
       $(".tableOfDriver").empty();
-      if(data == "Data not found!"){
+      if(data == "Data not found!" || data.indexOf('به این مشخصات معلوماتی وجود ندارد')>=0){
         $("#driverTable").hide();
         $("#notFound").fadeIn();
       }else{
@@ -869,7 +881,7 @@ $("input[name='reject']").click(function(){
    var txt_msg = approver_description.val();
 
   if (txt_msg.replace(/^\s+|\s+$/g, "").length == 0 || txt_msg==""||txt_msg.replace(/^\s+|\s+$/g, "").length <=9) {  
-      approver_description.siblings('div').html("<p class='text-white'>at least 10 characters for case of rejection is required</p>");
+      approver_description.siblings('div').html("<p class='text-white'>"+character10+"</p>");
       approver_description.css('border','2px solid #a91b17');
       approver_description.focus();
     

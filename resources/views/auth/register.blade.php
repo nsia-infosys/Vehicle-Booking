@@ -79,10 +79,10 @@
                                             <select class='form-control' name="department" id="department"
                                             class="form-control{{ $errors->has('department') ? ' is-invalid' : '' }}" name="department" value="{{ old('department') }}" required autofocus>
                                               <option value="">{{ __('Select a department') }}</option>
-                                              <option value="Deputy Directorate of System development">{{ __('Deputy Directorate of System development') }}</option>
-                                              <option value="GIS">{{ __('GIS') }}</option>
-                                              <option value="Administration">{{ __('Administration') }}</option>
-                                              <option value="Maslaki">{{ __('Maslaki') }}</option>
+                                              <option value="معاونیت انکشاف سیستم های معلوماتیی">{{ __('Deputy Directorate of System development') }}</option>
+                                              <option value="معاونیت جغرافیایی">{{ __('GIS') }}</option>
+                                              <option value="معاونیت اداری و مالی">{{ __('Administration') }}</option>
+                                              <option value="معاونیت مسلکی">{{ __('Maslaki') }}</option>
                                             </select>
                                         
                                     @if ($errors->has('department'))

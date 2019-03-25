@@ -6,8 +6,25 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+  @php
+      $title = basename($_SERVER ['PHP_SELF']);
+  @endphp
+    {{--  <title>{{ config('app.name', 'tmsNsia') }}</title>  --}}
+    <title>
+      @if($title == 'users') {{ __('msg.Users') }}@endif
+      @if($title == 'home') {{ __('msg.Home') }}@endif
+      @if($title == 'cars') {{ __('msg.Cars') }}@endif
+      @if($title == 'bookings') {{ __('msg.Bookings') }}@endif
+      @if($title == 'pending_bookings') {{ __('msg.Pending bookings') }}@endif
+      @if($title == 'drivers') {{ __('msg.Drivers') }}@endif
+      @if($title == 'user_roles') {{ __('msg.User role') }}@endif
+      @if($title == 'user_permissions') {{ __('msg.Users permission') }}@endif
+      @if($title == 'roles') {{ __('msg.Roles') }}@endif
+      @if($title == 'permissions') {{ __('msg.Permissions') }}@endif
+      @if($title == 'pendings_users') {{ __('msg.Pending users') }}@endif
 
-    <title>{{ config('app.name', 'tmsNsia') }}</title>
+
+    </title>
 <script>
   var lang = document.getElementsByTagName('html')[0].getAttribute('lang');
 </script>
