@@ -283,13 +283,13 @@ class carController extends Controller
      */
     public function destroy($plate_no)
     {
-        try{
-        $deleteData = Car::find($plate_no);
-        $deleteData->delete();
-        return "successfully deleted";
-    }
-        catch(QueryException $e){
-            print($ex->getMessage());
-        }
+    //     try{
+    //     $deleteData = Car::find($plate_no);
+    //     $deleteData->delete();
+    //     return "successfully deleted";
+    // }
+    //     catch(QueryException $e){
+    //         print($ex->getMessage());
+    //     }
     }
 }

@@ -20,8 +20,6 @@ class CreateBookingsTable extends Migration
             $table->tinyInteger('count');
             $table->longText('description');
             $table->string('destination');
-            $table->dateTime('book_created_time');
-            $table->dateTime('book_updated_time');
             $table->boolean('approval')->nullable();
             $table->longText('approver_description')->nullable();
             $table->dateTime('approval_pickup_time')->nullable();

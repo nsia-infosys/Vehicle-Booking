@@ -136,13 +136,17 @@ class driverController extends Controller
      */
     public function show($id)
     {
+        if(App::getLocale()=='fa'){
+            $update = 'تجدید';
+        }else{
+            $update = 'Update';
+        }
       $data = DB::table('drivers')->where('driver_id',$id)->first();
       if($data->status == 1){$data->status = 'true';}else{$data->status='false';}
     
     $row = "<tr><td><b>".$data->driver_id."</b></td><td>" . $data->name ."</td><td>" . $data->father_name ."</td><td>"
                 .$data->phone_no."</td><td>".$data->status."</td><td>".$data->created_at."</td><td>".$data->updated_at."</td><td><a href='/drivers/"
-                .$data->driver_id ."' id='".$data->driver_id."'class='btn btn-primary updateBtn' >Update</a></td><td><a a href='/drivers/"
-                .$data->driver_id ."' id='".$data->driver_id. "'class='btn btn-danger deleteBtn'>Delete </button></td></td></tr>";
+                .$data->driver_id ."' id='".$data->driver_id."'class='btn btn-primary updateBtn btn-sm' >$update</a></td></tr>";
      // return json_encode($data);
      return $row;
     }
@@ -221,14 +225,14 @@ class driverController extends Controller
     public function destroy($id,Request $yesOrNo)
     {
 
-        $dataId = DB::table("drivers")->where('driver_id',$id)->first();
-        $deleteId = DB::table('drivers')->where('driver_id',$id)->delete();
-        if($deleteId ===1){
-        $result = "driver with ID: " .$dataId->driver_id. " successfully deleted from table";
-        return $result; }
-        else{
-            return "Deletion not occured";
-        }
+        // $dataId = DB::table("drivers")->where('driver_id',$id)->first();
+        // $deleteId = DB::table('drivers')->where('driver_id',$id)->delete();
+        // if($deleteId ===1){
+        // $result = "driver with ID: " .$dataId->driver_id. " successfully deleted from table";
+        // return $result; }
+        // else{
+        //     return "Deletion not occured";
+        // }
         
     }
     
