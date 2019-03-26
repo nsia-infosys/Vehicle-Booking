@@ -36,7 +36,7 @@
                               <option value="">{{ __('msg.Select a car') }}</option>
                               
                               @foreach ($freeCars as $item)
-                              <option value="{{ $item->plate_no }}">{{ $item->type . "_" . $item->driver_id }}</option>
+                              <option value="{{ $item->plate_no }}">{{ $item->type . " " . $item->plate_no }}</option>
                              @endforeach
                             </select>
                           </div>
@@ -46,7 +46,7 @@
                                 <option value="">{{ __('msg.Select a driver') }}</option>
                                 
                                 @foreach ($freeDrivers as $item)
-                                 <option value="{{ $item->driver_id }}">{{ $item->driver_id . "_" . $item->name ."_". $item->phone_no }}</option>
+                                 <option value="{{ $item->driver_id }}">{{  $item->name ." ". $item->phone_no }}</option>
                                 @endforeach
                               </select>
                             </div>
@@ -65,9 +65,9 @@
                             <div class="help-error"></div>
                           </div>
                           <div class="col-md-12 clear-fix float-right">
-                            <input type="submit" value="APPROVE" class="btn float-right btn-primary">
+                            <input type="submit" value="{{ __('msg.Approve') }}" class="btn float-right btn-primary">
                             <span class="float-right">&nbsp;</span>
-                            <input type="button" value="REJECT" name='reject' class="btn float-right btn-danger">
+                            <input type="button" value="{{ __('msg.Reject') }}" name='reject' class="btn float-right btn-danger">
                           
                           </div>
                           
